@@ -345,7 +345,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="fundingGoal">Funding Goal (ICP)</Label>
-          <Input id="fundingGoal" type="number" step="0.00000001" {...basicInfoForm.register("fundingGoal")} placeholder="0.00" />
+          <Input id="fundingGoal" type="number" min='0' step="0.00000001" {...basicInfoForm.register("fundingGoal")} placeholder="0.00" />
           {basicInfoForm.formState.errors.fundingGoal && (
             <p className="text-sm text-red-500">{basicInfoForm.formState.errors.fundingGoal.message}</p>
           )}
@@ -497,6 +497,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
         <Label htmlFor="projectDuration">Project Duration (days)</Label>
         <Input
           id="projectDuration"
+          min='0'
           type="number"
           {...milestonesForm.register("projectDuration")}
           placeholder="e.g., 365"
@@ -544,6 +545,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                 <Input
                   type="number"
                   step="0.00000001"
+                  min='0'
                   {...milestonesForm.register(`milestones.${index}.amount`)}
                   placeholder="0.00"
                 />

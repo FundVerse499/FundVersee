@@ -1,0 +1,12 @@
+/Users/amr/Documents/GitHub/FundeVerse/target/release/deps/arrayvec-c760c1c0826cce2f.d: /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/lib.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/maybe_uninit.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/array.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/array_string.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/char.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/errors.rs
+
+/Users/amr/Documents/GitHub/FundeVerse/target/release/deps/libarrayvec-c760c1c0826cce2f.rlib: /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/lib.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/maybe_uninit.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/array.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/array_string.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/char.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/errors.rs
+
+/Users/amr/Documents/GitHub/FundeVerse/target/release/deps/libarrayvec-c760c1c0826cce2f.rmeta: /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/lib.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/maybe_uninit.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/array.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/array_string.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/char.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/errors.rs
+
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/lib.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/maybe_uninit.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/array.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/array_string.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/char.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrayvec-0.5.2/src/errors.rs:

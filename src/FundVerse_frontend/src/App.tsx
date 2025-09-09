@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Principal } from "@dfinity/principal";
+import { motion } from "framer-motion";
 import {
-  createFundVerseBackendActor, 
+  createFundVerseBackendActor,
   createFundFlowActor,
   copyToClipboard,
   formatPrincipal,
@@ -12,7 +13,6 @@ import {
 } from "./lib/ic";
 import type { ActorSubclass } from "@dfinity/agent";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-
 import CampaignCard from "./components/CampaignCard";
 import CampaignDetails from "./components/CampaignDetails";
 import Dashboard from "./components/Dashboard";
@@ -23,13 +23,13 @@ import LandingPage from "./components/LandingPage";
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
 import { Badge } from "./components/ui/badge";
-import { 
-  Copy, 
-  CheckCircle, 
-  Plus, 
-  TrendingUp, 
-  Users, 
-  Target, 
+import {
+  Copy,
+  CheckCircle,
+  Plus,
+  TrendingUp,
+  Users,
+  Target,
   Clock,
   Wallet,
   Activity,
@@ -96,7 +96,8 @@ function AppContent() {
   const [error, setError] = useState<string | null>(null);
 
   // UI state
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contributions' | 'admin'>('dashboard');
+const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contributions' | 'admin' | ''>('');
+
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showContributeDialog, setShowContributeDialog] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignCard | null>(null);
@@ -121,28 +122,28 @@ function AppContent() {
       setAppLoading(true);
       setError(null);
       console.log("Initializing actors...");
-      
+
       // Add timeout to prevent infinite loading
       const timeoutId = setTimeout(() => {
         console.error("Actor initialization timed out after 10 seconds");
         setAppLoading(false);
         setError("Connection timeout. Please refresh the page.");
       }, 10000);
-      
+
       const backend = await createFundVerseBackendActor();
       const fundFlow = await createFundFlowActor();
-      
+
       setBackendActor(backend);
       setFundFlowActor(fundFlow);
-      
+
       console.log("Actors initialized successfully");
-      
+
       // Load initial data
       await Promise.all([
         fetchCampaigns(backend),
         fetchUserContributions(fundFlow)
       ]);
-      
+
       clearTimeout(timeoutId);
     } catch (error) {
       console.error("Actor initialization error:", error);
@@ -184,7 +185,7 @@ function AppContent() {
   // Data fetching functions
   const fetchCampaigns = async (actor = backendActor) => {
     if (!actor) return;
-    
+
     try {
       console.log("Fetching campaigns...");
       const fetchedCampaigns = await actor.get_campaign_cards();
@@ -199,7 +200,7 @@ function AppContent() {
 
   const fetchUserContributions = async (actor = fundFlowActor) => {
     if (!actor || !identity) return;
-    
+
     try {
       console.log("Fetching user contributions...");
       const contributions = await actor.get_contributions_by_user([identity.getPrincipal()]);
@@ -226,7 +227,7 @@ function AppContent() {
 
     try {
       console.log("Creating campaign with data:", ideaData);
-      
+
       // Create idea first
       const ideaId = await backendActor.create_idea(
         ideaData.title,
@@ -243,7 +244,7 @@ function AppContent() {
       // Create campaign linked to idea
       const endDate = BigInt(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
       const result = await backendActor.create_campaign(ideaId, ideaData.fundingGoal, endDate);
-      
+
       if ('Ok' in result) {
         console.log("Campaign created successfully with ID:", result.Ok);
         await fetchCampaigns();
@@ -263,23 +264,23 @@ function AppContent() {
 
     try {
       console.log("Contributing to campaign:", campaignId, "amount:", amount);
-      
+
       const result = await fundFlowActor.contribute_icp(identity.getPrincipal(), campaignId, amount);
-      
+
       if ('Ok' in result) {
         console.log("Contribution successful, ID:", result.Ok);
-        
+
         // Update backend with contribution
         if (backendActor) {
           await backendActor.receive_icp_contribution(campaignId, amount);
         }
-        
+
         // Refresh data
         await Promise.all([
           fetchCampaigns(),
           fetchUserContributions()
         ]);
-        
+
         return result.Ok;
       } else {
         throw new Error(result.Err);
@@ -323,8 +324,8 @@ function AppContent() {
     if (identity) {
       const success = await copyToClipboard(identity.getPrincipal().toString());
       if (success) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       }
     }
   };
@@ -358,10 +359,10 @@ function AppContent() {
           {error && (
             <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 max-w-md">
               <p className="text-red-400 text-sm">{error}</p>
-              <Button 
-                onClick={() => window.location.reload()} 
-                variant="outline" 
-                size="sm" 
+              <Button
+                onClick={() => window.location.reload()}
+                variant="outline"
+                size="sm"
                 className="mt-2 text-red-400 border-red-400/30 hover:bg-red-500/20"
               >
                 Refresh Page
@@ -369,14 +370,14 @@ function AppContent() {
             </div>
           )}
           {appLoading && (
-            <Button 
+            <Button
               onClick={() => {
                 console.log("Manual stop loading triggered");
                 setAppLoading(false);
                 setError("Loading stopped manually");
-              }} 
-              variant="outline" 
-              size="sm" 
+              }}
+              variant="outline"
+              size="sm"
               className="mt-4 text-yellow-400 border-yellow-400/30 hover:bg-yellow-500/20"
             >
               Stop Loading
@@ -390,6 +391,7 @@ function AppContent() {
   return (
     <Router>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900">
+        
         {/* Header */}
         <header className="border-b border-white/10 bg-black/20 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4">
@@ -401,14 +403,18 @@ function AppContent() {
                 {isAuthenticated && (
                   <div className="hidden md:flex space-x-1">
                     <Button
-                      variant="ghost"
+                      variant={showLandingPage ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => setShowLandingPage(true)}
+                      onClick={() => {
+                        setShowLandingPage(true);
+                        setActiveTab('');
+                      }}
                       className="text-white hover:bg-white/10"
                     >
                       <TrendingUp className="h-4 w-4 mr-2" />
                       Home
                     </Button>
+
                     <Button
                       variant={activeTab === 'dashboard' ? 'default' : 'ghost'}
                       size="sm"
@@ -460,12 +466,12 @@ function AppContent() {
                       </span>
 
                       <Button onClick={copyPrincipal} variant="ghost" size="sm" className="text-white hover:bg-white/10">
-                {copied ? (
+                        {copied ? (
                           <CheckCircle className="h-4 w-4 text-green-400" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
                     </div>
                     <Button onClick={handleLogout} variant="outline" size="sm" className="text-white border-white/20 hover:bg-white/10">
                       <LogOut className="h-4 w-4 mr-2" />
@@ -496,10 +502,11 @@ function AppContent() {
             <div className="container mx-auto px-4 py-4">
               <div className="space-y-2">
                 <Button
-                  variant="ghost"
+                  variant={showLandingPage ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => {
                     setShowLandingPage(true);
+                    setActiveTab('');
                     setShowMobileMenu(false);
                   }}
                   className="w-full justify-start text-white hover:bg-white/10"
@@ -551,10 +558,10 @@ function AppContent() {
                     <User className="h-4 w-4 text-purple-400" />
                     <span>{identity ? formatPrincipal(identity.getPrincipal()) : 'Loading...'}</span>
                   </div>
-                  <Button 
-                    onClick={copyPrincipal} 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    onClick={copyPrincipal}
+                    variant="ghost"
+                    size="sm"
                     className="w-full justify-start text-white hover:bg-white/10"
                   >
                     {copied ? (
@@ -573,14 +580,14 @@ function AppContent() {
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
           {/* Error Display */}
-        {error && (
+          {error && (
             <Card className="mb-6 border-red-500/20 bg-red-500/10">
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-2 text-red-400">
                   <span className="text-sm font-medium">{error}</span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setError(null)}
                     className="text-red-400 hover:bg-red-500/20"
                   >
@@ -602,8 +609,8 @@ function AppContent() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button 
-                    onClick={handleLogin} 
+                  <Button
+                    onClick={handleLogin}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                     size="lg"
                   >
@@ -614,7 +621,7 @@ function AppContent() {
               </Card>
             </div>
           ) : showLandingPage ? (
-            <LandingPage 
+            <LandingPage
               onCreateProject={handleCreateProject}
               onExploreCampaigns={handleExploreCampaigns}
             />
@@ -632,9 +639,9 @@ function AppContent() {
                     {campaigns.length} campaigns
                   </Badge>
                 </div>
-                
+
                 {activeTab === 'campaigns' && (
-                  <Button 
+                  <Button
                     onClick={handleCreateProject}
                     className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                   >
@@ -642,25 +649,25 @@ function AppContent() {
                     Create Campaign
                   </Button>
                 )}
-          </div>
+              </div>
 
               {/* Content based on active tab */}
               {activeTab === 'dashboard' && (
                 <Dashboard campaigns={campaigns} />
-        )}
+              )}
 
               {activeTab === 'campaigns' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {campaigns.map((campaign) => (
-                  <CampaignCard
+                    <CampaignCard
                       key={campaign.id.toString()}
-                    campaign={campaign}
+                      campaign={campaign}
                       fundFlowActor={fundFlowActor}
-                    backendActor={backendActor}
+                      backendActor={backendActor}
                       onContribute={handleContribute}
-                  />
-                ))}
-              </div>
+                    />
+                  ))}
+                </div>
               )}
 
               {activeTab === 'contributions' && (
@@ -683,11 +690,11 @@ function AppContent() {
                                 Amount: {(Number(contribution.amount) / 100_000_000).toFixed(4)} ICP
                               </p>
                             </div>
-                            <Badge 
+                            <Badge
                               variant={
                                 'Released' in contribution.status ? 'default' :
-                                'Held' in contribution.status ? 'secondary' :
-                                'Pending' in contribution.status ? 'outline' : 'destructive'
+                                  'Held' in contribution.status ? 'secondary' :
+                                    'Pending' in contribution.status ? 'outline' : 'destructive'
                               }
                             >
                               {Object.keys(contribution.status)[0]}

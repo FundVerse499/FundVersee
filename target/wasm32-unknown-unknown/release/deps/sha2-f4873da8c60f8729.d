@@ -1,0 +1,12 @@
+/Users/amr/Documents/GitHub/FundeVerse/target/wasm32-unknown-unknown/release/deps/sha2-f4873da8c60f8729.d: /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/lib.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/consts.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha256.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha256_utils.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha512.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha512_utils.rs
+
+/Users/amr/Documents/GitHub/FundeVerse/target/wasm32-unknown-unknown/release/deps/libsha2-f4873da8c60f8729.rlib: /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/lib.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/consts.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha256.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha256_utils.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha512.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha512_utils.rs
+
+/Users/amr/Documents/GitHub/FundeVerse/target/wasm32-unknown-unknown/release/deps/libsha2-f4873da8c60f8729.rmeta: /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/lib.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/consts.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha256.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha256_utils.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha512.rs /Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha512_utils.rs
+
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/lib.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/consts.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha256.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha256_utils.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha512.rs:
+/Users/amr/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sha2-0.8.2/src/sha512_utils.rs:

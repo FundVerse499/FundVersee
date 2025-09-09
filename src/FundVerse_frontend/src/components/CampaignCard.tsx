@@ -1,12 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Progress } from './ui/progress';
-import { Badge } from './ui/badge';
-import { formatCurrency, calculateProgress, getDaysLeft, truncateAddress } from '../lib/utils';
-import { FUND_FLOW_CANISTER_ID_STR } from '../lib/ic';
-import { Copy, ExternalLink, TrendingUp, Clock, Target, Zap, CheckCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Button } from "./ui/button";
+import { Progress } from "./ui/progress";
+import { Badge } from "./ui/badge";
+import {
+  formatCurrency,
+  calculateProgress,
+  getDaysLeft,
+  truncateAddress,
+} from "../lib/utils";
+import { FUND_FLOW_CANISTER_ID_STR } from "../lib/ic";
+import {
+  Copy,
+  ExternalLink,
+  TrendingUp,
+  Clock,
+  Target,
+  Zap,
+  CheckCircle,
+} from "lucide-react";
 
 interface CampaignCardProps {
   campaign: {
@@ -44,40 +64,53 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy address:', error);
+      console.error("Failed to copy address:", error);
     }
   };
 
   const getStatusBadge = () => {
     if (!isActive) {
-      return <Badge variant="destructive" className="bg-red-500/20 text-red-400 border-red-500/30">Ended</Badge>;
+      return (
+        <Badge className="bg-red-500/20 text-red-400 border-red-500/30 animate-pulse">
+          Ended
+        </Badge>
+      );
     }
     if (isFunded) {
-      return <Badge className="bg-green-500/20 text-green-400 border-green-500/30 glow-green">Funded</Badge>;
+      return (
+        <Badge className="bg-green-500/20 text-green-400 border-green-500/30 animate-glow">
+          Funded
+        </Badge>
+      );
     }
-    return <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 border-blue-500/30">Active</Badge>;
+    return (
+      <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 animate-pulse">
+        Active
+      </Badge>
+    );
   };
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'Technology': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-      'Healthcare': 'bg-green-500/20 text-green-400 border-green-500/30',
-      'Education': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      'Environment': 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-      'Arts': 'bg-pink-500/20 text-pink-400 border-pink-500/30',
-      'Sports': 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-      'Food': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-      'Travel': 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-      'Finance': 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
+      Technology: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+      Healthcare: "bg-green-500/20 text-green-400 border-green-500/30",
+      Education: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+      Environment: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+      Arts: "bg-pink-500/20 text-pink-400 border-pink-500/30",
+      Sports: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+      Food: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+      Travel: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
+      Finance: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30",
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    return colors[category as keyof typeof colors] || "bg-gray-500/20 text-gray-400 border-gray-500/30";
   };
 
   return (
-<Card className="web3-card group">      <CardHeader className="space-y-4">
+    <Card className="web3-card group hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-500">
+      <CardHeader className="space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex-1 space-y-2">
-            <CardTitle className="text-xl font-bold line-clamp-2 group-hover:web3-gradient-text transition-all duration-300">
+            <CardTitle className="text-xl font-bold line-clamp-2 group-hover:text-blue-400 transition-all duration-300">
               {campaign.title}
             </CardTitle>
             <CardDescription className="flex items-center gap-2 flex-wrap">
@@ -98,17 +131,17 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
               <Target className="h-3 w-3" />
               Progress
             </span>
-            <span className="font-bold web3-gradient-text">{progress.toFixed(1)}%</span>
+            <span className="font-bold text-blue-400">{progress.toFixed(1)}%</span>
           </div>
-          
+
           <div className="relative">
             <Progress value={progress} className="h-3 bg-muted/20" />
-            <div 
-              className="absolute top-0 left-0 h-3 web3-progress rounded-full transition-all duration-500"
+            <div
+              className="absolute top-0 left-0 h-3 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-full animate-[pulse_1.5s_infinite]"
               style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
-          
+
           <div className="flex justify-between text-sm">
             <div className="text-muted-foreground">
               <span className="text-white font-semibold">
@@ -127,21 +160,21 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
 
         {/* Campaign Info */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="web3-card p-3 space-y-1">
+          <div className="web3-card p-3 space-y-1 hover:bg-white/10 transition-all duration-300 rounded-lg">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Zap className="h-3 w-3" />
               Campaign ID
             </div>
             <p className="font-mono text-sm text-white">#{campaign.id.toString()}</p>
           </div>
-          
-          <div className="web3-card p-3 space-y-1">
+
+          <div className="web3-card p-3 space-y-1 hover:bg-white/10 transition-all duration-300 rounded-lg">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" />
               Time Left
             </div>
-            <p className={`text-sm font-semibold ${daysLeft > 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {daysLeft > 0 ? `${daysLeft} days` : 'Ended'}
+            <p className={`text-sm font-semibold ${daysLeft > 0 ? "text-green-400" : "text-red-400"}`}>
+              {daysLeft > 0 ? `${daysLeft} days` : "Ended"}
             </p>
           </div>
         </div>
@@ -160,13 +193,13 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
               className="h-6 w-6 p-0 hover:bg-white/10"
             >
               {copied ? (
-                <CheckCircle className="h-3 w-3 text-green-400" />
+                <CheckCircle className="h-3 w-3 text-green-400 animate-bounce" />
               ) : (
                 <Copy className="h-3 w-3" />
               )}
             </Button>
           </div>
-          <div className="web3-card p-3 text-xs font-mono break-all text-muted-foreground">
+          <div className="web3-card p-3 text-xs font-mono break-all text-muted-foreground hover:bg-white/10 transition-all duration-300 rounded-lg">
             {truncateAddress(FUND_FLOW_CANISTER_ID_STR, 12)}
           </div>
         </div>
@@ -176,16 +209,18 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
         <Button
           onClick={() => onContribute(campaign.id)}
           disabled={!isActive}
-          className="flex-1 btn-web3-primary group-hover:glow-purple"
+          className={`flex-1 btn-web3-primary group-hover:glow-purple transition-all duration-300 ${
+            isActive ? "animate-pulse" : "opacity-50"
+          }`}
         >
           <TrendingUp className="h-4 w-4 mr-2" />
-          {isFunded ? 'Funded' : 'Contribute ICP'}
+          {isFunded ? "Funded" : "Contribute ICP"}
         </Button>
-        
-        <Button 
-          variant="outline" 
+
+        <Button
+          variant="outline"
           size="sm"
-          className="btn-web3-secondary"
+          className="btn-web3-secondary hover:scale-105 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300"
           onClick={() => navigate(`/campaign/${campaign.id.toString()}`)}
         >
           <ExternalLink className="h-4 w-4" />

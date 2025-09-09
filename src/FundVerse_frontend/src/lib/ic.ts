@@ -13,7 +13,7 @@ import {
 } from "../../../declarations/Fund_Flow";
 
 import { 
-  createActor as createBackendActor, 
+  createActor as createBackendActor,
   canisterId as FUNDVERSE_BACKEND_CANISTER_ID,
   idlFactory as fundVerseBackendIdl 
 } from "../../../declarations/FundVerse_backend";

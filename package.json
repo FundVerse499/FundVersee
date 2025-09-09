@@ -14,5 +14,12 @@
   "type": "module",
   "workspaces": [
     "src/FundVerse_frontend"
-  ]
+  ],
+  "dependencies": {
+    "framer-motion": "^12.23.12",
+    "lottie-react": "^2.4.1",
+    "lucide-react": "^0.543.0",
+    "react-tsparticles": "^2.12.2",
+    "tsparticles": "^3.9.1"
+  }
 }
