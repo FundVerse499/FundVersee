@@ -80,7 +80,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  
+
   // Debug loading state
   useEffect(() => {
     if (isLoading) {
@@ -89,7 +89,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
       console.log("Loading state changed to false");
     }
   }, [isLoading]);
-  
+
   // Form data storage
   const [formData, setFormData] = useState<{
     basicInfo?: BasicInfoForm;
@@ -153,7 +153,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
           // Manual validation for file sizes
           const data = financialDocsForm.getValues();
           let hasLargeFile = false;
-          
+
           if (data.businessPlan && data.businessPlan.size > 2 * 1024 * 1024) {
             setSubmitError("Business plan file must be less than 2MB");
             hasLargeFile = true;
@@ -167,7 +167,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
             setSubmitError("Tax returns file must be less than 2MB");
             hasLargeFile = true;
           }
-          
+
           if (!hasLargeFile) {
             setFormData(prev => ({ ...prev, financialDocs: data }));
             setCurrentStep(3);
@@ -199,7 +199,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
   const handleSubmit = async (data: AgreementsForm) => {
     console.log("handleSubmit called with data:", data);
     console.log("formData:", formData);
-    
+
     setIsLoading(true);
     setSubmitError(null);
 
@@ -323,7 +323,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="title">Project Title</Label>
-        <Input id="title" {...basicInfoForm.register("title")} placeholder="Enter project title" />
+        <Input id="title" {...basicInfoForm.register("title")} placeholder="Enter project title" required />
         {basicInfoForm.formState.errors.title && (
           <p className="text-sm text-red-500">{basicInfoForm.formState.errors.title.message}</p>
         )}
@@ -336,7 +336,11 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
           {...basicInfoForm.register("description")}
           placeholder="Describe your project"
           className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          required
         />
+        <small className="text-gray-400">
+          Description must be at least 10 characters.
+        </small>
         {basicInfoForm.formState.errors.description && (
           <p className="text-sm text-red-500">{basicInfoForm.formState.errors.description.message}</p>
         )}
@@ -345,7 +349,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="fundingGoal">Funding Goal (ICP)</Label>
-          <Input id="fundingGoal" type="number" min='0' step="0.00000001" {...basicInfoForm.register("fundingGoal")} placeholder="0.00" />
+          <Input id="fundingGoal" type="number" min='0' step="0.00000001" {...basicInfoForm.register("fundingGoal")} placeholder="0.00" required />
           {basicInfoForm.formState.errors.fundingGoal && (
             <p className="text-sm text-red-500">{basicInfoForm.formState.errors.fundingGoal.message}</p>
           )}
@@ -373,7 +377,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
 
       <div className="space-y-2">
         <Label htmlFor="legalEntity">Legal Entity</Label>
-        <Input id="legalEntity" {...basicInfoForm.register("legalEntity")} placeholder="Company or organization name" />
+        <Input id="legalEntity" {...basicInfoForm.register("legalEntity")} placeholder="Company or organization name" required />
         {basicInfoForm.formState.errors.legalEntity && (
           <p className="text-sm text-red-500">{basicInfoForm.formState.errors.legalEntity.message}</p>
         )}
@@ -381,7 +385,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
 
       <div className="space-y-2">
         <Label htmlFor="contactInfo">Contact Email</Label>
-        <Input id="contactInfo" type="email" {...basicInfoForm.register("contactInfo")} placeholder="your@email.com" />
+        <Input id="contactInfo" type="email" {...basicInfoForm.register("contactInfo")} placeholder="your@email.com" required />
         {basicInfoForm.formState.errors.contactInfo && (
           <p className="text-sm text-red-500">{basicInfoForm.formState.errors.contactInfo.message}</p>
         )}
@@ -389,7 +393,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
 
       <div className="space-y-2">
         <Label htmlFor="businessRegistration">Business Registration Number</Label>
-        <Input id="businessRegistration" {...basicInfoForm.register("businessRegistration")} placeholder="Enter registration number" />
+        <Input id="businessRegistration" {...basicInfoForm.register("businessRegistration")} placeholder="Enter registration number" required />
         {basicInfoForm.formState.errors.businessRegistration && (
           <p className="text-sm text-red-500">{basicInfoForm.formState.errors.businessRegistration.message}</p>
         )}
@@ -417,6 +421,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                   financialDocsForm.setValue("businessPlan", file);
                 }
               }}
+              required
             />
             {formData.financialDocs?.businessPlan && <CheckCircle className="h-4 w-4 text-green-500" />}
           </div>
@@ -438,6 +443,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                   financialDocsForm.setValue("financialProjections", file);
                 }
               }}
+              required
             />
             {formData.financialDocs?.financialProjections && <CheckCircle className="h-4 w-4 text-green-500" />}
           </div>
@@ -459,6 +465,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                   financialDocsForm.setValue("legalDocuments", file);
                 }
               }}
+              required
             />
             {formData.financialDocs?.legalDocuments && <CheckCircle className="h-4 w-4 text-green-500" />}
           </div>
@@ -480,6 +487,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                   financialDocsForm.setValue("taxReturns", file);
                 }
               }}
+              required
             />
             {formData.financialDocs?.taxReturns && <CheckCircle className="h-4 w-4 text-green-500" />}
           </div>
@@ -501,6 +509,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
           type="number"
           {...milestonesForm.register("projectDuration")}
           placeholder="e.g., 365"
+          required
         />
         {milestonesForm.formState.errors.projectDuration && (
           <p className="text-sm text-red-500">{milestonesForm.formState.errors.projectDuration.message}</p>
@@ -538,6 +547,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                 <Input
                   {...milestonesForm.register(`milestones.${index}.title`)}
                   placeholder="Milestone title"
+                  required
                 />
               </div>
               <div className="space-y-1">
@@ -548,6 +558,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                   min='0'
                   {...milestonesForm.register(`milestones.${index}.amount`)}
                   placeholder="0.00"
+                  required
                 />
               </div>
             </div>
@@ -558,7 +569,11 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                 {...milestonesForm.register(`milestones.${index}.description`)}
                 placeholder="Describe this milestone"
                 className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                required
               />
+              <small className="text-gray-400">
+                Description must be at least 10 characters.
+              </small>
             </div>
 
             <div className="space-y-1">
@@ -566,6 +581,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
               <Input
                 type="date"
                 {...milestonesForm.register(`milestones.${index}.dueDate`)}
+                required
               />
             </div>
           </div>
@@ -591,6 +607,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
             id="termsAccepted"
             {...agreementsForm.register("termsAccepted")}
             className="mt-1"
+            required
           />
           <div className="space-y-1">
             <Label htmlFor="termsAccepted" className="text-sm font-medium">
@@ -608,6 +625,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
             id="privacyAccepted"
             {...agreementsForm.register("privacyAccepted")}
             className="mt-1"
+            required
           />
           <div className="space-y-1">
             <Label htmlFor="privacyAccepted" className="text-sm font-medium">
@@ -625,6 +643,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
             id="legalAccepted"
             {...agreementsForm.register("legalAccepted")}
             className="mt-1"
+            required
           />
           <div className="space-y-1">
             <Label htmlFor="legalAccepted" className="text-sm font-medium">
@@ -653,8 +672,8 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
           <div className="text-sm text-blue-800">
             <p className="font-medium">Important Notice</p>
             <p>
-              Your project will be reviewed by our admin team before approval. 
-              This process typically takes 3-5 business days. You will be notified 
+              Your project will be reviewed by our admin team before approval.
+              This process typically takes 3-5 business days. You will be notified
               via email once the review is complete.
             </p>
           </div>
@@ -722,25 +741,23 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
         <DialogHeader>
           <DialogTitle>{getStepTitle()}</DialogTitle>
           <DialogDescription>{getStepDescription()}</DialogDescription>
-          
+
           {/* Progress indicator */}
           <div className="flex items-center space-x-2 mt-4">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    step <= currentStep
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-600"
-                  }`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step <= currentStep
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-600"
+                    }`}
                 >
                   {step}
                 </div>
                 {step < 4 && (
                   <div
-                    className={`w-12 h-1 mx-2 ${
-                      step < currentStep ? "bg-blue-600" : "bg-gray-200"
-                    }`}
+                    className={`w-12 h-1 mx-2 ${step < currentStep ? "bg-blue-600" : "bg-gray-200"
+                      }`}
                   />
                 )}
               </div>
@@ -765,7 +782,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
             >
               Cancel
             </Button>
-            
+
             {currentStep > 1 && (
               <Button
                 type="button"
@@ -776,7 +793,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                 Previous
               </Button>
             )}
-            
+
             {currentStep < 4 ? (
               <Button
                 type="button"
@@ -786,8 +803,8 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                 Next
               </Button>
             ) : (
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 onClick={agreementsForm.handleSubmit(handleSubmit)}
                 disabled={isLoading}
               >

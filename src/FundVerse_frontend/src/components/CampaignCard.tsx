@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -51,7 +51,6 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   onContribute,
 }) => {
   const [copied, setCopied] = useState(false);
-  const navigate = useNavigate();
 
   const progress = calculateProgress(campaign.amount_raised, campaign.goal);
   const daysLeft = getDaysLeft(campaign.end_date);
@@ -102,7 +101,10 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
       Travel: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
       Finance: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30",
     };
-    return colors[category as keyof typeof colors] || "bg-gray-500/20 text-gray-400 border-gray-500/30";
+    return (
+      colors[category as keyof typeof colors] ||
+      "bg-gray-500/20 text-gray-400 border-gray-500/30"
+    );
   };
 
   return (
@@ -114,7 +116,10 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
               {campaign.title}
             </CardTitle>
             <CardDescription className="flex items-center gap-2 flex-wrap">
-              <Badge variant="outline" className={getCategoryColor(campaign.category)}>
+              <Badge
+                variant="outline"
+                className={getCategoryColor(campaign.category)}
+              >
                 {campaign.category}
               </Badge>
               {getStatusBadge()}
@@ -131,7 +136,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
               <Target className="h-3 w-3" />
               Progress
             </span>
-            <span className="font-bold text-blue-400">{progress.toFixed(1)}%</span>
+            <span className="font-bold text-blue-400">
+              {progress.toFixed(1)}%
+            </span>
           </div>
 
           <div className="relative">
@@ -165,7 +172,9 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
               <Zap className="h-3 w-3" />
               Campaign ID
             </div>
-            <p className="font-mono text-sm text-white">#{campaign.id.toString()}</p>
+            <p className="font-mono text-sm text-white">
+              #{campaign.id.toString()}
+            </p>
           </div>
 
           <div className="web3-card p-3 space-y-1 hover:bg-white/10 transition-all duration-300 rounded-lg">
@@ -173,7 +182,11 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
               <Clock className="h-3 w-3" />
               Time Left
             </div>
-            <p className={`text-sm font-semibold ${daysLeft > 0 ? "text-green-400" : "text-red-400"}`}>
+            <p
+              className={`text-sm font-semibold ${
+                daysLeft > 0 ? "text-green-400" : "text-red-400"
+              }`}
+            >
               {daysLeft > 0 ? `${daysLeft} days` : "Ended"}
             </p>
           </div>
@@ -205,26 +218,27 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
         </div>
       </CardContent>
 
-      <CardFooter className="flex gap-3 pt-6">
+      <CardFooter className="flex gap-3 pt-6 group">
         <Button
           onClick={() => onContribute(campaign.id)}
           disabled={!isActive}
-          className={`flex-1 btn-web3-primary group-hover:glow-purple transition-all duration-300 ${
-            isActive ? "animate-pulse" : "opacity-50"
+          className={`flex-1 btn-web3-primary group-hover:animate-[pulse_3s_ease-in-out_infinite] transition-all duration-300 ${
+            isActive ? "" : "opacity-50"
           }`}
         >
           <TrendingUp className="h-4 w-4 mr-2" />
           {isFunded ? "Funded" : "Contribute ICP"}
         </Button>
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="btn-web3-secondary hover:scale-105 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300"
-          onClick={() => navigate(`/campaign/${campaign.id.toString()}`)}
-        >
-          <ExternalLink className="h-4 w-4" />
-        </Button>
+        <Link to={`/campaign/${campaign.id.toString()}`}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="btn-web3-secondary hover:scale-105 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
