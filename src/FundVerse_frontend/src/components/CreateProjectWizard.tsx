@@ -28,14 +28,22 @@ const basicInfoSchema = z.object({
   category: z.string().min(1, "Category is required"),
   businessRegistration: z.string().min(1, "Business registration is required"),
 });
-
 // Step 2: Financial Documents
 const financialDocsSchema = z.object({
-  businessPlan: z.any().optional(),
-  financialProjections: z.any().optional(),
-  legalDocuments: z.any().optional(),
-  taxReturns: z.any().optional(),
+  businessPlan: z
+    .any()
+    .refine((file) => file instanceof File, "Business plan is required"),
+  financialProjections: z
+    .any()
+    .refine((file) => file instanceof File, "Financial projections are required"),
+  legalDocuments: z
+    .any()
+    .refine((file) => file instanceof File, "Legal documents are required"),
+  taxReturns: z
+    .any()
+    .refine((file) => file instanceof File, "Tax returns are required"),
 });
+
 
 // Step 3: Milestones
 const milestoneSchema = z.object({
@@ -150,30 +158,16 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
           }
           break;
         case 2:
-          // Manual validation for file sizes
-          const data = financialDocsForm.getValues();
-          let hasLargeFile = false;
-
-          if (data.businessPlan && data.businessPlan.size > 2 * 1024 * 1024) {
-            setSubmitError("Business plan file must be less than 2MB");
-            hasLargeFile = true;
-          } else if (data.financialProjections && data.financialProjections.size > 2 * 1024 * 1024) {
-            setSubmitError("Financial projections file must be less than 2MB");
-            hasLargeFile = true;
-          } else if (data.legalDocuments && data.legalDocuments.size > 2 * 1024 * 1024) {
-            setSubmitError("Legal documents file must be less than 2MB");
-            hasLargeFile = true;
-          } else if (data.taxReturns && data.taxReturns.size > 2 * 1024 * 1024) {
-            setSubmitError("Tax returns file must be less than 2MB");
-            hasLargeFile = true;
-          }
-
-          if (!hasLargeFile) {
+          isValid = await financialDocsForm.trigger();
+          if (isValid) {
+            const data = financialDocsForm.getValues();
             setFormData(prev => ({ ...prev, financialDocs: data }));
             setCurrentStep(3);
-            setSubmitError(null);
+          } else {
+            console.log("Step 2 validation errors:", financialDocsForm.formState.errors);
           }
           break;
+
         case 3:
           isValid = await milestonesForm.trigger();
           if (isValid) {
@@ -580,6 +574,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
               <Label>Due Date</Label>
               <Input
                 type="date"
+                className="calendar-white"
                 {...milestonesForm.register(`milestones.${index}.dueDate`)}
                 required
               />

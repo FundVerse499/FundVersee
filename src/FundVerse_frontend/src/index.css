@@ -234,3 +234,22 @@
   transform: none !important;
 } */
 
+
+/* ✅ Date Input Calendar Icon */
+
+/* Light Mode (افتراضي) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+  cursor: pointer;
+}
+
+/* Dark Mode */
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0) invert(1); /* يخلي الأيقونة بيضاء */
+  cursor: pointer;
+}
+
+/* دعم فايرفوكس */
+.dark input[type="date"] {
+  color-scheme: dark;
+}
