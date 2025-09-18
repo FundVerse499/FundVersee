@@ -10,7 +10,7 @@ use ic_cdk_macros::{init, query, update};
 use ic_stable_structures::{
     memory_manager::{MemoryId, MemoryManager, VirtualMemory},
     storable::Bound,
-    DefaultMemoryImpl, StableBTreeMap, Storable,
+    DefaultMemoryImpl, StableBTreeMap, Storable, StableCell,
 };
 use candid::{CandidType, Decode, Encode, Principal};
 use serde::Deserialize;
@@ -60,11 +60,23 @@ thread_local! {
         RefCell::new(MEMORY_MANAGER.with(|mm| {
             StableBTreeMap::init(mm.borrow().get(MemoryId::new(1)))
         }));
+
+    static ID_COUNTER: RefCell<StableCell<u64, Memory>> =
+        RefCell::new(MEMORY_MANAGER.with(|mm| {
+            StableCell::init(mm.borrow().get(MemoryId::new(2)), 0u64)
+                .expect("failed to init StableCell for ID_COUNTER")
+        }));
 }
 
 // -------- Helpers --------
 fn next_payment_method_id() -> u64 {
-    PAYMENT_METHODS.with(|m| (m.borrow().len() as u64) + 1)
+    ID_COUNTER.with(|cell| {
+        let mut c = cell.borrow_mut();
+        let current = *c.get();
+        let next = current + 1;
+        c.set(next).expect("failed to update ID_COUNTER");
+        next
+    })
 }
 
 fn now_ns() -> u64 {
@@ -225,7 +237,9 @@ fn get_user_payment_methods(p: Option<Principal>) -> Vec<PaymentMethodDetail> {
             PAYMENT_METHODS.with(|pm| {
                 for id in &ids.0 {
                     if let Some(d) = pm.borrow().get(&id) {
-                        res.push(d.clone());
+                        if d.is_active {
+                            res.push(d.clone());
+                        }
                     }
                 }
             });
@@ -239,13 +253,14 @@ fn deactivate_payment_method(id: u64) -> Result<(), String> {
     let caller = api::caller();
     let detail_opt = PAYMENT_METHODS.with(|pm| pm.borrow().get(&id).map(|d| d.clone()));
     if let Some(mut detail) = detail_opt {
-        if detail.owner == caller {
-            detail.is_active = false;
-            PAYMENT_METHODS.with(|pm| pm.borrow_mut().insert(id, detail));
-            return Ok(());
+        if detail.owner != caller {
+            return Err("You are not the owner of this payment method".into());
         }
+        detail.is_active = false;
+        PAYMENT_METHODS.with(|pm| pm.borrow_mut().insert(id, detail));
+        return Ok(());
     }
-    Err("not found or not owner".into())
+    Err("Payment method not found".into())
 }
 
 #[query]
