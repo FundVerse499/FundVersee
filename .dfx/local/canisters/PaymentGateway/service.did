@@ -1,0 +1,18 @@
+type PaymentMethodDetail = record {
+  id : nat64;
+  provider : text;
+  owner : principal;
+  created_at_ns : nat64;
+  method_type : text;
+  currency : text;
+  is_active : bool;
+  masked_account : text;
+};
+service : {
+  deactivate_payment_method : (nat64) -> (variant { Ok; Err : text });
+  get_payment_method : (nat64) -> (opt PaymentMethodDetail) query;
+  get_user_payment_methods : (opt principal) -> (vec PaymentMethodDetail) query;
+  register_payment_method : (text, text, text, text) -> (
+      variant { Ok : nat64; Err : text },
+    );
+}

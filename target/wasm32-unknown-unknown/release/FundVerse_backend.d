@@ -1,0 +1,1 @@
+/mnt/d/OMNYA/fundVerse/FundVersee-main/FundVersee-main/target/wasm32-unknown-unknown/release/FundVerse_backend.wasm: /mnt/d/OMNYA/fundVerse/FundVersee-main/FundVersee-main/src/FundVerse_backend/src/lib.rs

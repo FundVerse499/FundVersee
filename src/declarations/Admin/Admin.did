@@ -1,0 +1,95 @@
+type Role = variant { Admin; User; Innovator };
+type IdeaStatus = variant { Pending; UnderReview; Approved; Rejected; RequiresRevision };
+type AdminError = variant { 
+  NotAuthorized; 
+  UserNotFound; 
+  IdeaNotFound; 
+  ProjectNotFound; 
+  AlreadyExists; 
+  InvalidInput : text; 
+  InsufficientPermissions; 
+  InvalidStatusTransition; 
+};
+
+type RegisteredUser = record {
+  principal;
+  name : text;
+  email : text;
+  role : Role;
+  registered_at_ns : nat64;
+};
+
+type Milestone = record {
+  id : nat64;
+  title : text;
+  description : text;
+  amount_e8s : nat64;
+  due_date_ns : nat64;
+  completed : bool;
+};
+
+type Project = record {
+  id : nat64;
+  idea_id : nat64;
+  title : text;
+  description : text;
+  funding_goal_e8s : nat64;
+  legal_entity : text;
+  contact_info : text;
+  category : text;
+  business_registration : nat8;
+  submitted_by : principal;
+  submitted_at_ns : nat64;
+  status : IdeaStatus;
+  project_duration_days : nat32;
+  milestones : vec Milestone;
+  document_ids : vec nat64;
+  admin_notes : opt text;
+  review_date_ns : opt nat64;
+  reviewer : opt principal;
+};
+
+type Idea = record {
+  id : nat64;
+  title : text;
+  description : text;
+  submitted_by : principal;
+  submitted_at_ns : nat64;
+  status : IdeaStatus;
+};
+
+type ApproveRejectResult = record {
+  id : nat64;
+  status : IdeaStatus;
+};
+
+service : () -> {
+  // User Management
+  register_user : (text, text) -> (RegisteredUser);
+  add_admin : (principal) -> (variant { Ok; Err : AdminError });
+  remove_admin : (principal) -> (variant { Ok; Err : AdminError });
+  set_role : (principal, Role) -> (variant { Ok; Err : AdminError });
+  add_innovator : (principal) -> (variant { Ok; Err : AdminError });
+  remove_innovator : (principal) -> (variant { Ok; Err : AdminError });
+  
+  // User Queries
+  get_users : () -> (vec RegisteredUser) query;
+  get_my_role : () -> (Role) query;
+  get_innovators : () -> (vec RegisteredUser) query;
+  is_innovator_check : (principal) -> (bool) query;
+  
+  // Idea Management
+  submit_idea : (text, text) -> (variant { Ok : Idea; Err : AdminError });
+  approve_idea : (nat64) -> (variant { Ok : ApproveRejectResult; Err : AdminError });
+  reject_idea : (nat64) -> (variant { Ok : ApproveRejectResult; Err : AdminError });
+  get_ideas : () -> (vec Idea) query;
+  get_idea : (nat64) -> (opt Idea) query;
+  
+  // Project Management
+  submit_project : (text, text, nat64, text, text, text, nat8, nat32, vec record { text; text; nat64; nat64 }, vec nat64) -> (variant { Ok : Project; Err : AdminError });
+  review_project : (nat64, IdeaStatus, opt text) -> (variant { Ok : Project; Err : AdminError });
+  get_projects : () -> (vec Project) query;
+  get_projects_by_status : (IdeaStatus) -> (vec Project) query;
+  get_my_projects : () -> (vec Project) query;
+  get_project : (nat64) -> (opt Project) query;
+}
