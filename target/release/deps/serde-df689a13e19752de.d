@@ -1,0 +1,14 @@
+/home/marwan_issa/FundVerseV2/FundeVerse/target/release/deps/serde-df689a13e19752de.d: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/integer128.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/mod.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/de.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/ser.rs /home/marwan_issa/FundVerseV2/FundeVerse/target/release/build/serde-bd7c5a03e733ec7b/out/private.rs
+
+/home/marwan_issa/FundVerseV2/FundeVerse/target/release/deps/libserde-df689a13e19752de.rlib: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/integer128.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/mod.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/de.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/ser.rs /home/marwan_issa/FundVerseV2/FundeVerse/target/release/build/serde-bd7c5a03e733ec7b/out/private.rs
+
+/home/marwan_issa/FundVerseV2/FundeVerse/target/release/deps/libserde-df689a13e19752de.rmeta: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/integer128.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/mod.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/de.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/ser.rs /home/marwan_issa/FundVerseV2/FundeVerse/target/release/build/serde-bd7c5a03e733ec7b/out/private.rs
+
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/lib.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/integer128.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/mod.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/de.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/ser.rs:
+/home/marwan_issa/FundVerseV2/FundeVerse/target/release/build/serde-bd7c5a03e733ec7b/out/private.rs:
+
+# env-dep:OUT_DIR=/home/marwan_issa/FundVerseV2/FundeVerse/target/release/build/serde-bd7c5a03e733ec7b/out

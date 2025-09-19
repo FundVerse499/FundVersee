@@ -1,0 +1,14 @@
+/home/marwan_issa/FundVerseV2/FundeVerse/target/debug/deps/serde-f16f7af551c7a357.d: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/integer128.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/mod.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/de.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/ser.rs /home/marwan_issa/FundVerseV2/FundeVerse/target/debug/build/serde-da839c7487252bb0/out/private.rs
+
+/home/marwan_issa/FundVerseV2/FundeVerse/target/debug/deps/libserde-f16f7af551c7a357.rlib: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/integer128.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/mod.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/de.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/ser.rs /home/marwan_issa/FundVerseV2/FundeVerse/target/debug/build/serde-da839c7487252bb0/out/private.rs
+
+/home/marwan_issa/FundVerseV2/FundeVerse/target/debug/deps/libserde-f16f7af551c7a357.rmeta: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/integer128.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/mod.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/de.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/ser.rs /home/marwan_issa/FundVerseV2/FundeVerse/target/debug/build/serde-da839c7487252bb0/out/private.rs
+
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/lib.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/integer128.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/mod.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/de.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.225/src/private/ser.rs:
+/home/marwan_issa/FundVerseV2/FundeVerse/target/debug/build/serde-da839c7487252bb0/out/private.rs:
+
+# env-dep:OUT_DIR=/home/marwan_issa/FundVerseV2/FundeVerse/target/debug/build/serde-da839c7487252bb0/out

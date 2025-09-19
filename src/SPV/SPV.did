@@ -1,0 +1,11 @@
+type Investor = record {
+  investor_principal: principal;
+  fractions: nat64;
+};
+
+service : {
+  init_spv: (nat64, nat64) -> ();
+  add_investor: (principal, nat64) -> (variant { Ok; Err: text });
+  investor_balance: (principal) -> (nat64) query;
+  distribute_exit: (nat64) -> (vec record { principal; nat64 });
+}

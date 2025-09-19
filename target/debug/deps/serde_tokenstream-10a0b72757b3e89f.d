@@ -1,0 +1,10 @@
+/home/marwan_issa/FundVerseV2/FundeVerse/target/debug/deps/serde_tokenstream-10a0b72757b3e89f.d: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/ibidem.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/ordered_map.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/serde_tokenstream.rs
+
+/home/marwan_issa/FundVerseV2/FundeVerse/target/debug/deps/libserde_tokenstream-10a0b72757b3e89f.rlib: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/ibidem.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/ordered_map.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/serde_tokenstream.rs
+
+/home/marwan_issa/FundVerseV2/FundeVerse/target/debug/deps/libserde_tokenstream-10a0b72757b3e89f.rmeta: /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/lib.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/ibidem.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/ordered_map.rs /home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/serde_tokenstream.rs
+
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/lib.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/ibidem.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/ordered_map.rs:
+/home/marwan_issa/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_tokenstream-0.1.7/src/serde_tokenstream.rs:

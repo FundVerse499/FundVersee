@@ -1,0 +1,12 @@
+type DealTerms = record {
+  startup_id: text;
+  equity_percent: nat8;
+  total_raise: nat64;
+  fraction_price: nat64;
+  spv_canister: opt principal;
+};
+
+service : {
+  create_spv: (text, nat8, nat64, nat64) -> (nat64);
+  list_deals: () -> (vec record { nat64; DealTerms }) query;
+}
