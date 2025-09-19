@@ -1,0 +1,72 @@
+type Campaign = record {
+  id : nat64;
+  business_registration : nat8;
+  status : opt text;
+  title : text;
+  updated_at : nat64;
+  current_funding : nat64;
+  goal : nat64;
+  description : text;
+  end_date : nat64;
+  created_at : nat64;
+  legal_entity : text;
+  funding_goal : nat64;
+  contact_info : text;
+  category : text;
+  doc_ids : vec nat64;
+  amount_raised : nat64;
+};
+type CampaignCard = record {
+  id : nat64;
+  title : text;
+  goal : nat64;
+  end_date : nat64;
+  category : text;
+  days_left : int64;
+  amount_raised : nat64;
+};
+type CampaignMeta = record {
+  goal : nat64;
+  end_date_secs : nat64;
+  campaign_id : nat64;
+  amount_raised : nat64;
+};
+type CampaignStatus = variant { Ended; Active };
+type CampaignWithDetails = record {
+  campaign : CampaignCard;
+  details : Campaign;
+};
+type Doc = record {
+  id : nat64;
+  data : blob;
+  name : text;
+  content_type : text;
+  campaign_id : nat64;
+  uploaded_at : nat64;
+};
+type Result = variant { Ok : nat64; Err : text };
+service : {
+  create_campaign : (
+      text,
+      text,
+      nat64,
+      text,
+      text,
+      text,
+      nat8,
+      nat64,
+      nat64,
+    ) -> (nat64);
+  get_campaign_by_id : (nat64) -> (opt Campaign) query;
+  get_campaign_cards : () -> (vec CampaignCard) query;
+  get_campaign_cards_by_status : (CampaignStatus) -> (vec CampaignCard) query;
+  get_campaign_meta : (nat64) -> (opt CampaignMeta) query;
+  get_campaign_total_funding : (nat64) -> (nat64) query;
+  get_campaign_with_details : (nat64) -> (opt CampaignWithDetails) query;
+  get_doc : (nat64) -> (opt Doc) query;
+  get_icp_contribution : (nat64) -> (nat64) query;
+  greet : (text) -> (text) query;
+  receive_icp_contribution : (nat64, nat64) -> (Result);
+  receive_payout : (nat64, nat64) -> (Result);
+  upload_doc : (nat64, text, text, blob, nat64) -> (opt nat64);
+}

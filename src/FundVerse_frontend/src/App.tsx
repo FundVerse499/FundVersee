@@ -46,26 +46,30 @@ interface CampaignCard {
   title: string;
   goal: bigint;
   end_date: bigint;
-  idea_id: bigint;
   category: string;
   days_left: bigint;
   amount_raised: bigint;
 }
 
-interface CampaignWithIdea {
+interface CampaignWithDetails {
   campaign: CampaignCard;
-  idea: {
-    business_registration: number;
-    status: [] | [string];
+  details: {
+    id: bigint;
     title: string;
-    updated_at: bigint;
-    current_funding: bigint;
     description: string;
-    created_at: bigint;
-    legal_entity: string;
     funding_goal: bigint;
+    current_funding: bigint;
+    legal_entity: string;
+    status: [] | [string];
     contact_info: string;
     category: string;
+    business_registration: number;
+    created_at: bigint;
+    updated_at: bigint;
+    doc_ids: bigint[];
+    amount_raised: bigint;
+    goal: bigint;
+    end_date: bigint;
   };
 }
 
@@ -228,30 +232,23 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
     try {
       console.log("Creating campaign with data:", ideaData);
 
-      // Create idea first
-      const ideaId = await backendActor.create_idea(
+      // Create campaign (now includes all idea data)
+      const endDate = BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60); // 30 days from now
+      const campaignId = await backendActor.create_campaign(
         ideaData.title,
         ideaData.description,
         ideaData.fundingGoal,
-        ideaData.category,
         ideaData.legalEntity,
         ideaData.contactInfo,
-        ideaData.businessRegistration
+        ideaData.category,
+        ideaData.businessRegistration,
+        ideaData.fundingGoal, // goal parameter
+        endDate // end_date parameter
       );
 
-      console.log("Idea created with ID:", ideaId);
-
-      // Create campaign linked to idea
-      const endDate = BigInt(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
-      const result = await backendActor.create_campaign(ideaId, ideaData.fundingGoal, endDate);
-
-      if ('Ok' in result) {
-        console.log("Campaign created successfully with ID:", result.Ok);
-        await fetchCampaigns();
-        return result.Ok;
-      } else {
-        throw new Error(result.Err);
-      }
+      console.log("Campaign created successfully with ID:", campaignId);
+      await fetchCampaigns();
+      return campaignId;
     } catch (error) {
       console.error("Error creating campaign:", error);
       const icError = handleICError(error);
@@ -292,12 +289,12 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
     }
   };
 
-  const getCampaignDetails = async (campaignId: bigint): Promise<CampaignWithIdea | null> => {
+  const getCampaignDetails = async (campaignId: bigint): Promise<CampaignWithDetails | null> => {
     if (!backendActor) return null;
 
     try {
       console.log("Fetching campaign details for ID:", campaignId);
-      const result = await backendActor.get_campaign_with_idea(campaignId);
+      const result = await backendActor.get_campaign_with_details(campaignId);
       return result[0] || null;
     } catch (error) {
       console.error("Error fetching campaign details:", error);
@@ -717,7 +714,7 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
           <CreateProjectWizard
             open={showCreateDialog}
             onOpenChange={setShowCreateDialog}
-            backendActor={backendActor}
+            backendActor={backendActor as any}
             onProjectCreated={() => {
               setShowCreateDialog(false);
               fetchCampaigns();

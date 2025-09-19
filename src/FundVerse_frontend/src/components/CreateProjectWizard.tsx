@@ -3,6 +3,7 @@ import type { _SERVICE as FundVerseBackendService } from "../../../declarations/
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { uploadMultipleFiles } from "../utils/chunkedUpload";
 
 import {
   Dialog,
@@ -88,6 +89,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<{ completed: number; total: number } | null>(null);
 
   // Debug loading state
   useEffect(() => {
@@ -208,7 +210,7 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
         throw new Error("Missing required form data");
       }
 
-      // 1. Create the idea
+      // 1. Create the campaign (now includes all idea data)
       const fundingGoalE8s = Math.floor(parseFloat(formData.basicInfo.fundingGoal) * 100_000_000);
       if (Number.isNaN(fundingGoalE8s) || fundingGoalE8s <= 0) {
         throw new Error("Funding goal must be a positive number");
@@ -216,17 +218,26 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
 
       const businessRegNat8 = Number(formData.basicInfo.businessRegistration) & 0xff;
 
-      const ideaId: bigint = await backendActor.create_idea(
+      // Create campaign with project duration
+      const projectDurationDays = parseInt(formData.milestones.projectDuration);
+      const nowSecs = Math.floor(Date.now() / 1000);
+      const endDateSecs = nowSecs + projectDurationDays * 24 * 60 * 60;
+
+      const campaignId: bigint = await backendActor.create_campaign(
         formData.basicInfo.title,
         formData.basicInfo.description,
         BigInt(fundingGoalE8s),
-        formData.basicInfo.category,
         formData.basicInfo.legalEntity,
         formData.basicInfo.contactInfo,
-        businessRegNat8
+        formData.basicInfo.category,
+        businessRegNat8,
+        BigInt(fundingGoalE8s),
+        BigInt(endDateSecs)
       );
 
-      // 2. Upload financial documents
+      console.log("Campaign created with ID:", campaignId);
+
+      // 2. Upload financial documents using chunked upload
       const uploadedDocs: bigint[] = [];
       if (formData.financialDocs) {
         const docs = [
@@ -234,48 +245,38 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
           { file: formData.financialDocs.financialProjections, name: "financial_projections" },
           { file: formData.financialDocs.legalDocuments, name: "legal_documents" },
           { file: formData.financialDocs.taxReturns, name: "tax_returns" },
-        ];
+        ].filter(doc => doc.file); // Only include files that exist
 
-        for (const doc of docs) {
-          if (doc.file) {
-            const arrayBuffer = await doc.file.arrayBuffer();
-            const bytes = new Uint8Array(arrayBuffer);
-            const docId = await backendActor.upload_doc(
-              BigInt(ideaId),
-              doc.name,
-              doc.file.type,
-              Array.from(bytes),
-              BigInt(Date.now() >>> 0)
-            );
-            if (docId && docId.length > 0) {
-              uploadedDocs.push(docId[0] as bigint);
+        if (docs.length > 0) {
+          const uploadResult = await uploadMultipleFiles(
+            backendActor,
+            BigInt(campaignId),
+            docs,
+            (completed, total) => {
+              console.log(`Upload progress: ${completed}/${total} files completed`);
+              setUploadProgress({ completed, total });
             }
+          );
+
+          if (uploadResult.success) {
+            uploadedDocs.push(...uploadResult.docIds);
+          } else {
+            console.warn("Some documents failed to upload:", uploadResult.errors);
+            // Still continue with the documents that were uploaded successfully
+            uploadedDocs.push(...uploadResult.docIds);
           }
         }
       }
 
-      // 3. Create campaign with project duration
-      const projectDurationDays = parseInt(formData.milestones.projectDuration);
-      const nowSecs = Math.floor(Date.now() / 1000);
-      const endDateSecs = nowSecs + projectDurationDays * 24 * 60 * 60;
-
-      const createRes = await backendActor.create_campaign(
-        BigInt(ideaId),
-        BigInt(fundingGoalE8s),
-        BigInt(endDateSecs)
-      );
-
-      if ("Err" in createRes) {
-        throw new Error(createRes.Err);
-      }
-
       // Success
       clearTimeout(timeoutId);
+      setUploadProgress(null);
       resetAllForms();
       onOpenChange(false);
       onProjectCreated();
     } catch (err: any) {
       clearTimeout(timeoutId);
+      setUploadProgress(null);
       console.error("Failed to create project:", err);
       let errorMessage = "Failed to create project";
       if (err?.message) {
@@ -806,7 +807,11 @@ export const CreateProjectWizard: React.FC<CreateProjectWizardProps> = ({
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Project...
+                    {uploadProgress ? (
+                      `Uploading documents... (${uploadProgress.completed}/${uploadProgress.total})`
+                    ) : (
+                      "Creating Project..."
+                    )}
                   </>
                 ) : (
                   "Create Project"

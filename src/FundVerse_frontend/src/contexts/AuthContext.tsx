@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('Login successful');
             resolve();
           },
-          onError: (error) => {
+          onError: (error: any) => {
             console.error('Login failed:', error);
             reject(error);
           },

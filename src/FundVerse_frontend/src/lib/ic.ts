@@ -83,7 +83,7 @@ export const login = async (): Promise<boolean> => {
           console.log('Login successful');
           resolve(true);
         },
-        onError: (error) => {
+        onError: (error: any) => {
           console.error('Login failed:', error);
           reject(error);
         },

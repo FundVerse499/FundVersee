@@ -37,7 +37,6 @@ interface CampaignCardProps {
     end_date: bigint;
     days_left: bigint;
     category: string;
-    idea_id: bigint;
   };
   fundFlowActor: any;
   backendActor: any;

@@ -3,26 +3,37 @@ type CampaignCard = record {
   title : text;
   goal : nat64;
   end_date : nat64;
-  idea_id : nat64;
   category : text;
   days_left : int64;
   amount_raised : nat64;
 };
+
 type CampaignStatus = variant { Ended; Active };
-type CampaignWithIdea = record { campaign : CampaignCard; idea : Idea };
-type Idea = record {
-  business_registration : nat8;
-  status : opt text;
+
+type CampaignWithDetails = record { 
+  campaign : CampaignCard; 
+  details : Campaign 
+};
+
+type Campaign = record {
+  id : nat64;
   title : text;
-  updated_at : nat64;
-  current_funding : nat64;
   description : text;
-  created_at : nat64;
-  legal_entity : text;
   funding_goal : nat64;
+  current_funding : nat64;
+  legal_entity : text;
+  status : opt text;
   contact_info : text;
   category : text;
+  business_registration : nat8;
+  created_at : nat64;
+  updated_at : nat64;
+  doc_ids : vec nat64;
+  amount_raised : nat64;
+  goal : nat64;
+  end_date : nat64;
 };
+
 type Result = variant { Ok : nat64; Err : text };
 
 type CampaignMeta = record {
@@ -34,32 +45,46 @@ type CampaignMeta = record {
 
 type Doc = record {
   id : nat64;
-  idea_id : nat64;
+  campaign_id : nat64;
   name : text;
   content_type : text;
   data : vec nat8;
   uploaded_at : nat64;
 };
 
+type UploadChunk = record {
+  doc_id : nat64;
+  chunk_index : nat32;
+  data : vec nat8;
+  is_final : bool;
+};
+
 service : () -> {
-  // Create a Campaign linked to an existing Idea. Returns new campaign_id (Ok) or error (Err).
-  create_campaign : (nat64, nat64, nat64) -> (Result);
-  // Create an Idea and persist it in stable storage. Returns the new idea_id.
-  create_idea : (text, text, nat64, text, text, text, nat8) -> (nat64);
-  // Return all campaign cards (title/category pulled from linked Idea).
+  // Create a Campaign and persist it in stable storage. Returns the new campaign_id.
+  create_campaign : (text, text, nat64, text, text, text, nat8, nat64, nat64) -> (nat64);
+  
+  // Return all campaign cards.
   get_campaign_cards : () -> (vec CampaignCard) query;
+  
   // Return cards filtered by status (Active/Ended).
   get_campaign_cards_by_status : (CampaignStatus) -> (vec CampaignCard) query;
-  // Fetch a single campaign joined with its Idea.
-  get_campaign_with_idea : (nat64) -> (opt CampaignWithIdea) query;
-  // Convenience: fetch an idea by id
-  get_idea_by_id : (nat64) -> (opt Idea) query;
+  
+  // Fetch a single campaign with its details.
+  get_campaign_with_details : (nat64) -> (opt CampaignWithDetails) query;
+  
+  // Convenience: fetch a campaign by id
+  get_campaign_by_id : (nat64) -> (opt Campaign) query;
+  
   // Simple hello (handy for quick health checks)
   greet : (text) -> (text) query;
   
   // Document methods
   upload_doc : (nat64, text, text, vec nat8, nat64) -> (opt nat64);
   get_doc : (nat64) -> (opt Doc) query;
+  
+  // Chunked upload methods
+  start_chunked_upload : (nat64, text, text, nat32, nat64) -> (opt nat64);
+  upload_chunk : (UploadChunk) -> (variant { Ok : null; Err : text });
   
   // Fund_Flow integration methods
   get_campaign_meta : (nat64) -> (opt CampaignMeta) query;

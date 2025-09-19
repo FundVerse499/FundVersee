@@ -1,1 +1,1 @@
-/Users/amr/Documents/GitHub/FundeVerse/target/wasm32-unknown-unknown/release/Admin.wasm: /Users/amr/Documents/GitHub/FundeVerse/src/Admin/src/lib.rs
+/home/marwan_issa/FundVerseV2/FundeVerse/target/wasm32-unknown-unknown/release/Admin.wasm: /home/marwan_issa/FundVerseV2/FundeVerse/src/Admin/src/lib.rs

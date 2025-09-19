@@ -69,31 +69,22 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
       // 2) nat8 for businessRegistration
       const businessRegNat8 = Number(data.businessRegistration) & 0xff;
 
-      // 3) create idea (returns bigint)
-      const ideaId: bigint = await backendActor.create_idea(
-        data.title,
-        data.description,
-        BigInt(fundingGoalE8s),
-        data.category,
-        data.legalEntity,
-        data.contactInfo,
-        businessRegNat8
-      );
-
-      // 4) end date after 30 days
+      // 3) end date after 30 days
       const nowSecs = Math.floor(Date.now() / 1000);
       const endDateSecs = nowSecs + 30 * 24 * 60 * 60;
 
-      // 5) create campaign
-      const createRes = await backendActor.create_campaign(
-        BigInt(ideaId),
+      // 4) create campaign (now includes all idea data)
+      const campaignId: bigint = await backendActor.create_campaign(
+        data.title,
+        data.description,
+        BigInt(fundingGoalE8s),
+        data.legalEntity,
+        data.contactInfo,
+        data.category,
+        businessRegNat8,
         BigInt(fundingGoalE8s),
         BigInt(endDateSecs)
       );
-
-      if ("Err" in createRes) {
-        throw new Error(createRes.Err);
-      }
 
       // ✅ success
       reset();

@@ -25,10 +25,8 @@ type Idea = record {
 };
 type Result = variant { Ok : nat64; Err : text };
 service : () -> {
-  // Create a Campaign linked to an existing Idea. Returns new campaign_id (Ok) or error (Err).
-  create_campaign : (nat64, nat64, nat64) -> (Result);
   // Create an Idea and persist it in stable storage. Returns the new idea_id.
-  create_idea : (text, text, nat64, text, text, text, nat8) -> (nat64);
+  create_campaign : (text, text, nat64, text, text, text, nat8) -> (nat64);
   // Return all campaign cards (title/category pulled from linked Idea).
   get_campaign_cards : () -> (vec CampaignCard) query;
   // Return cards filtered by status (Active/Ended).
