@@ -1,5 +1,10 @@
 import type { _SERVICE as FundVerseBackendService } from "../../../declarations/FundVerse_backend/FundVerse_backend.did";
 import type { _SERVICE as FundFlowService } from "../../../declarations/Fund_Flow/Fund_Flow.did";
+import type { _SERVICE as ControllerService } from "../../../declarations/Controller/Controller.did";
+import type { _SERVICE as SPVService } from "../../../declarations/SPV/SPV.did";
+import type { _SERVICE as SpvTokenService } from "../../../declarations/Spv_Token/Spv_Token.did";
+import type { _SERVICE as PaymentGatewayService } from "../../../declarations/PaymentGateway/PaymentGateway.did";
+import type { _SERVICE as AdminService } from "../../../declarations/Admin/Admin.did";
 import type { ActorSubclass } from "@dfinity/agent";
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { AuthClient } from '@dfinity/auth-client';
@@ -17,6 +22,36 @@ import {
   canisterId as FUNDVERSE_BACKEND_CANISTER_ID,
   idlFactory as fundVerseBackendIdl 
 } from "../../../declarations/FundVerse_backend";
+
+import { 
+  createActor as createControllerActorGenerated,
+  canisterId as CONTROLLER_CANISTER_ID,
+  idlFactory as controllerIdl 
+} from "../../../declarations/Controller";
+
+import { 
+  createActor as createSPVActorGenerated,
+  canisterId as SPV_CANISTER_ID,
+  idlFactory as spvIdl 
+} from "../../../declarations/SPV";
+
+import { 
+  createActor as createSpvTokenActorGenerated,
+  canisterId as SPV_TOKEN_CANISTER_ID,
+  idlFactory as spvTokenIdl 
+} from "../../../declarations/Spv_Token";
+
+import { 
+  createActor as createPaymentGatewayActorGenerated,
+  canisterId as PAYMENT_GATEWAY_CANISTER_ID,
+  idlFactory as paymentGatewayIdl 
+} from "../../../declarations/PaymentGateway";
+
+import { 
+  createActor as createAdminActorGenerated,
+  canisterId as ADMIN_CANISTER_ID,
+  idlFactory as adminIdl 
+} from "../../../declarations/Admin";
 
 // Environment configuration
 const isLocal = process.env.DFX_NETWORK === 'local' || 
@@ -138,9 +173,39 @@ export const createFundFlowActor = async (): Promise<ActorSubclass<FundFlowServi
   return createFundFlowActorgenerated(FUND_FLOW_CANISTER_ID, { agent });
 };
 
+export const createControllerActor = async (): Promise<ActorSubclass<ControllerService>> => {
+  const agent = await createAgent();
+  return createControllerActorGenerated(CONTROLLER_CANISTER_ID, { agent });
+};
+
+export const createSPVActor = async (): Promise<ActorSubclass<SPVService>> => {
+  const agent = await createAgent();
+  return createSPVActorGenerated(SPV_CANISTER_ID, { agent });
+};
+
+export const createSpvTokenActor = async (): Promise<ActorSubclass<SpvTokenService>> => {
+  const agent = await createAgent();
+  return createSpvTokenActorGenerated(SPV_TOKEN_CANISTER_ID, { agent });
+};
+
+export const createPaymentGatewayActor = async (): Promise<ActorSubclass<PaymentGatewayService>> => {
+  const agent = await createAgent();
+  return createPaymentGatewayActorGenerated(PAYMENT_GATEWAY_CANISTER_ID, { agent });
+};
+
+export const createAdminActor = async (): Promise<ActorSubclass<AdminService>> => {
+  const agent = await createAgent();
+  return createAdminActorGenerated(ADMIN_CANISTER_ID, { agent });
+};
+
 // Helper exports for canister IDs
 export const FUNDVERSE_BACKEND_CANISTER_ID_STR: string = String(FUNDVERSE_BACKEND_CANISTER_ID);
 export const FUND_FLOW_CANISTER_ID_STR: string = String(FUND_FLOW_CANISTER_ID);
+export const CONTROLLER_CANISTER_ID_STR: string = String(CONTROLLER_CANISTER_ID);
+export const SPV_CANISTER_ID_STR: string = String(SPV_CANISTER_ID);
+export const SPV_TOKEN_CANISTER_ID_STR: string = String(SPV_TOKEN_CANISTER_ID);
+export const PAYMENT_GATEWAY_CANISTER_ID_STR: string = String(PAYMENT_GATEWAY_CANISTER_ID);
+export const ADMIN_CANISTER_ID_STR: string = String(ADMIN_CANISTER_ID);
 
 export const getCanisterPrincipal = (canisterId: string): Principal => Principal.fromText(canisterId);
 
@@ -207,4 +272,12 @@ export const getConnectionStatus = async () => {
 };
 
 // Export types for use in components
-export type { FundVerseBackendService, FundFlowService };
+export type { 
+  FundVerseBackendService, 
+  FundFlowService, 
+  ControllerService, 
+  SPVService, 
+  SpvTokenService, 
+  PaymentGatewayService, 
+  AdminService 
+};

@@ -1,0 +1,1 @@
+RefMut<'_, StableCell<std::option::Option<candid::Principal>, VirtualMemory<Ic0StableMemory>>>

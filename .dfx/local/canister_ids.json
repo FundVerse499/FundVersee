@@ -1,14 +1,32 @@
 {
   "Admin": {
-    "local": "vg3po-ix777-77774-qaafa-cai"
+    "local": "uxrrr-q7777-77774-qaaaq-cai"
+  },
+  "Controller": {
+    "local": "vizcg-th777-77774-qaaea-cai"
   },
   "FundVerse_backend": {
-    "local": "vb2j2-fp777-77774-qaafq-cai"
+    "local": "uzt4z-lp777-77774-qaabq-cai"
   },
   "FundVerse_frontend": {
-    "local": "vu5yx-eh777-77774-qaaga-cai"
+    "local": "umunu-kh777-77774-qaaca-cai"
   },
   "Fund_Flow": {
-    "local": "vt46d-j7777-77774-qaagq-cai"
+    "local": "u6s2n-gx777-77774-qaaba-cai"
+  },
+  "PaymentGateway": {
+    "local": "ulvla-h7777-77774-qaacq-cai"
+  },
+  "SPV": {
+    "local": "ucwa4-rx777-77774-qaada-cai"
+  },
+  "Spv_Token": {
+    "local": "ufxgi-4p777-77774-qaadq-cai"
+  },
+  "__Candid_UI": {
+    "local": "vpyes-67777-77774-qaaeq-cai"
+  },
+  "internet_identity": {
+    "local": "rdmx6-jaaaa-aaaaa-aaadq-cai"
   }
 }

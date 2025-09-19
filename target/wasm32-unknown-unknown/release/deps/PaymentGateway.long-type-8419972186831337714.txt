@@ -1,0 +1,1 @@
+Ref<'_, StableBTreeMap<u64, PaymentVerification, VirtualMemory<Ic0StableMemory>>>

@@ -27,6 +27,8 @@ import {
   Zap,
   CheckCircle,
 } from "lucide-react";
+import UnifiedFundingDisplay from "./UnifiedFundingDisplay";
+import SPVIntegration from "./SPVIntegration";
 
 interface CampaignCardProps {
   campaign: {
@@ -50,6 +52,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   onContribute,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const progress = calculateProgress(campaign.amount_raised, campaign.goal);
   const daysLeft = getDaysLeft(campaign.end_date);
@@ -229,16 +232,25 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
           {isFunded ? "Funded" : "Contribute ICP"}
         </Button>
 
-        <Link to={`/campaign/${campaign.id.toString()}`}>
-          <Button
-            variant="outline"
-            size="sm"
-            className="btn-web3-secondary hover:scale-105 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Button
+          onClick={() => setShowDetails(!showDetails)}
+          variant="outline"
+          size="sm"
+          className="btn-web3-secondary hover:scale-105 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-300"
+        >
+          <ExternalLink className="h-4 w-4" />
+        </Button>
       </CardFooter>
+
+      {/* Detailed View */}
+      {showDetails && (
+        <div className="border-t border-white/10 p-6 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <UnifiedFundingDisplay campaignId={campaign.id} />
+            <SPVIntegration campaignId={campaign.id} />
+          </div>
+        </div>
+      )}
     </Card>
   );
 };

@@ -59,6 +59,36 @@ type UploadChunk = record {
   is_final : bool;
 };
 
+// New types for integration
+type UnifiedFunding = record {
+  total_goal : nat64;
+  icp_raised : nat64;
+  traditional_raised : nat64;
+  spv_raised : nat64;
+  total_raised : nat64;
+};
+
+type SPVDealInfo = record {
+  deal_id : nat64;
+  campaign_id : nat64;
+  equity_percent : nat8;
+  total_raise : nat64;
+  fraction_price : nat64;
+  spv_canister : opt principal;
+  spv_token_canister : opt principal;
+};
+
+type PaymentMethodDetail = record {
+  id : nat64;
+  owner : principal;
+  method_type : text;
+  provider : text;
+  masked_account : text;
+  currency : text;
+  is_active : bool;
+  created_at_ns : nat64;
+};
+
 service : () -> {
   // Create a Campaign and persist it in stable storage. Returns the new campaign_id.
   create_campaign : (text, text, nat64, text, text, text, nat8, nat64, nat64) -> (nat64);
@@ -92,4 +122,30 @@ service : () -> {
   receive_payout : (nat64, nat64) -> (Result);
   get_icp_contribution : (nat64) -> (nat64) query;
   get_campaign_total_funding : (nat64) -> (nat64) query;
+  
+  // Canister setup methods
+  set_controller_canister : (principal) -> ();
+  set_payment_gateway_canister : (principal) -> ();
+  set_admin_canister : (principal) -> ();
+  
+  // SPV integration methods
+  create_spv_deal : (nat64, nat8, nat64, nat64) -> (variant { Ok : nat64; Err : text });
+  get_spv_deals_for_campaign : (nat64) -> (vec nat64) query;
+  link_campaign_to_spv : (nat64, nat64) -> (variant { Ok : null; Err : text });
+  get_spv_deal_info : (nat64) -> (opt SPVDealInfo) query;
+  receive_spv_contribution : (nat64, nat64) -> (variant { Ok : null; Err : text });
+  
+  // PaymentGateway integration methods
+  get_user_payment_methods : (opt principal) -> (variant { Ok : vec PaymentMethodDetail; Err : text });
+  process_traditional_payment : (nat64, nat64, nat64) -> (variant { Ok : nat64; Err : text });
+  
+  // Unified funding methods
+  get_unified_funding : (nat64) -> (opt UnifiedFunding) query;
+  get_traditional_contribution : (nat64) -> (nat64) query;
+  get_spv_contribution : (nat64) -> (nat64) query;
+  
+  // Admin integration methods
+  submit_campaign_for_approval : (nat64) -> (variant { Ok : null; Err : text });
+  get_campaign_approval_status : (nat64) -> (opt text) query;
+  approve_campaign : (nat64) -> (variant { Ok : null; Err : text });
 }

@@ -13,12 +13,18 @@ import {
 } from "./lib/ic";
 import type { ActorSubclass } from "@dfinity/agent";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import CampaignCard from "./components/CampaignCard";
+import { CanisterProvider, useCanisters } from "./contexts/CanisterContext";
+import CampaignCardComponent from "./components/CampaignCard";
 import CampaignDetails from "./components/CampaignDetails";
 import Dashboard from "./components/Dashboard";
 import CreateProjectWizard from "./components/CreateProjectWizard";
 import ContributionDialog from "./components/ContributionDialog";
 import LandingPage from "./components/LandingPage";
+import UnifiedFundingDisplay from "./components/UnifiedFundingDisplay";
+import SPVIntegration from "./components/SPVIntegration";
+import PaymentMethods from "./components/PaymentMethods";
+import AdminPanel from "./components/AdminPanel";
+import type { CampaignCard } from "./types";
 
 import { Button } from "./components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
@@ -37,19 +43,11 @@ import {
   LogOut,
   User,
   Menu,
-  X
+  X,
+  Building2
 } from "lucide-react";
 
-// Types for campaign data
-interface CampaignCard {
-  id: bigint;
-  title: string;
-  goal: bigint;
-  end_date: bigint;
-  category: string;
-  days_left: bigint;
-  amount_raised: bigint;
-}
+// Types for campaign data (imported from types/index.ts)
 
 interface CampaignWithDetails {
   campaign: CampaignCard;
@@ -87,6 +85,7 @@ interface Contribution {
 
 function AppContent() {
   const { isAuthenticated, user, identity, login, logout, loading } = useAuth();
+  const { adminActor } = useCanisters();
   const [copied, setCopied] = useState(false);
 
   // Actor instances
@@ -98,9 +97,10 @@ function AppContent() {
   const [userContributions, setUserContributions] = useState<Contribution[]>([]);
   const [appLoading, setAppLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // UI state
-const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contributions' | 'admin' | ''>('');
+const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contributions' | 'spv' | 'admin' | ''>('');
 
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showContributeDialog, setShowContributeDialog] = useState(false);
@@ -145,7 +145,8 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
       // Load initial data
       await Promise.all([
         fetchCampaigns(backend),
-        fetchUserContributions(fundFlow)
+        fetchUserContributions(fundFlow),
+        checkAdminStatus()
       ]);
 
       clearTimeout(timeoutId);
@@ -214,6 +215,19 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
       console.error("Error fetching contributions:", error);
       const icError = handleICError(error);
       setError(icError.message);
+    }
+  };
+
+  const checkAdminStatus = async () => {
+    if (!identity || !adminActor) return;
+    
+    try {
+      // Check if user has admin role using the Admin canister
+      const role = await adminActor.get_my_role();
+      setIsAdmin(role.Admin !== null);
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+      setIsAdmin(false);
     }
   };
 
@@ -448,6 +462,32 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
                       <Wallet className="h-4 w-4 mr-2" />
                       My Contributions
                     </Button>
+                    <Button
+                      variant={activeTab === 'spv' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => {
+                        setShowLandingPage(false);
+                        setActiveTab('spv');
+                      }}
+                      className="text-white hover:bg-white/10"
+                    >
+                      <Building2 className="h-4 w-4 mr-2" />
+                      SPV Investments
+                    </Button>
+                    {isAdmin && (
+                      <Button
+                        variant={activeTab === 'admin' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => {
+                          setShowLandingPage(false);
+                          setActiveTab('admin');
+                        }}
+                        className="text-white hover:bg-white/10"
+                      >
+                        <Settings className="h-4 w-4 mr-2" />
+                        Admin
+                      </Button>
+                    )}
 
                   </div>
                 )}
@@ -550,6 +590,34 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
                   <Wallet className="h-4 w-4 mr-2" />
                   My Contributions
                 </Button>
+                <Button
+                  variant={activeTab === 'spv' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => {
+                    setShowLandingPage(false);
+                    setActiveTab('spv');
+                    setShowMobileMenu(false);
+                  }}
+                  className="w-full justify-start text-white hover:bg-white/10"
+                >
+                  <Building2 className="h-4 w-4 mr-2" />
+                  SPV Investments
+                </Button>
+                {isAdmin && (
+                  <Button
+                    variant={activeTab === 'admin' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => {
+                      setShowLandingPage(false);
+                      setActiveTab('admin');
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full justify-start text-white hover:bg-white/10"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Admin
+                  </Button>
+                )}
                 <div className="pt-2 border-t border-white/10">
                   <div className="flex items-center space-x-2 text-sm text-white/80 mb-2">
                     <User className="h-4 w-4 text-purple-400" />
@@ -631,6 +699,8 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
                     {activeTab === 'dashboard' && 'Dashboard'}
                     {activeTab === 'campaigns' && 'All Campaigns'}
                     {activeTab === 'contributions' && 'My Contributions'}
+                    {activeTab === 'spv' && 'SPV Investments'}
+                    {activeTab === 'admin' && 'Admin Panel'}
                   </h2>
                   <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
                     {campaigns.length} campaigns
@@ -656,7 +726,7 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
               {activeTab === 'campaigns' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {campaigns.map((campaign) => (
-                    <CampaignCard
+                    <CampaignCardComponent
                       key={campaign.id.toString()}
                       campaign={campaign}
                       fundFlowActor={fundFlowActor}
@@ -701,6 +771,35 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
                       </Card>
                     ))
                   )}
+                </div>
+              )}
+
+              {activeTab === 'spv' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <PaymentMethods />
+                    <div className="space-y-4">
+                      <h3 className="text-white font-medium">SPV Investments</h3>
+                      <Card className="bg-black/20 border-white/10">
+                        <CardContent className="pt-6 text-center">
+                          <Building2 className="h-12 w-12 mx-auto text-white/40 mb-4" />
+                          <h4 className="text-white font-medium mb-2">SPV Investment Management</h4>
+                          <p className="text-white/70 text-sm mb-4">
+                            Manage your equity investments and SPV deals. Create SPV deals for campaigns to enable equity-based funding.
+                          </p>
+                          <p className="text-white/60 text-xs">
+                            SPV deals can be created from individual campaign pages.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'admin' && (
+                <div className="space-y-6">
+                  <AdminPanel />
                 </div>
               )}
 
@@ -755,7 +854,9 @@ const [activeTab, setActiveTab] = useState<'dashboard' | 'campaigns' | 'contribu
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <CanisterProvider>
+        <AppContent />
+      </CanisterProvider>
     </AuthProvider>
   );
 }

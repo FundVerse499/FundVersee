@@ -1,0 +1,42 @@
+type PaymentMethodDetail = record {
+  id : nat64;
+  owner : principal;
+  method_type : text;
+  provider : text;
+  masked_account : text;
+  currency : text;
+  is_active : bool;
+  created_at_ns : nat64;
+};
+
+type PaymentVerification = record {
+  payment_id : nat64;
+  investor : principal;
+  spv_id : nat64;
+  deal_id : nat64;
+  amount : nat64;
+  payment_method_id : nat64;
+  status : PaymentStatus;
+  created_at_ns : nat64;
+  verified_at_ns : opt nat64;
+};
+
+type PaymentStatus = variant {
+  Pending;
+  Verified;
+  Failed;
+  Refunded;
+};
+
+service : () -> {
+  init : () -> ();
+  set_spv_token_canister : (principal) -> ();
+  register_payment_method : (text, text, text, text) -> (variant { Ok : nat64; Err : text });
+  get_user_payment_methods : (opt principal) -> (vec PaymentMethodDetail) query;
+  deactivate_payment_method : (nat64) -> (variant { Ok; Err : text });
+  get_payment_method : (nat64) -> (opt PaymentMethodDetail) query;
+  initiate_payment : (nat64, nat64, nat64, nat64) -> (variant { Ok : nat64; Err : text });
+  verify_payment : (nat64) -> (variant { Ok; Err : text });
+  get_payment_verification : (nat64) -> (opt PaymentVerification) query;
+  get_investor_payments : (principal) -> (vec PaymentVerification) query;
+};

@@ -2,6 +2,10 @@
 members = [
     "src/FundVerse_backend",
     "src/Fund_Flow",
-    "src/Admin"
+    "src/Admin",
+    "src/Controller",
+    "src/SPV",
+    "src/Spv_Token",
+    "src/PaymentGateway"
 ]
 resolver = "2"

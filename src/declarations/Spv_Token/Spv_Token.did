@@ -1,4 +1,28 @@
+type InvestmentCertificate = record {
+  token_id: nat64;
+  owner: principal;
+  spv_id: nat64;
+  deal_id: nat64;
+  investment_amount: nat64;
+  fractions: nat64;
+  created_at: nat64;
+  is_transferable: bool;
+};
+
+type CertificateMetadata = record {
+  name: text;
+  description: text;
+  image_url: text;
+  attributes: vec record { text; text };
+};
+
 service : {
-  mint: (principal, nat64) -> ();
+  init: () -> ();
+  set_spv_canister: (principal) -> ();
+  mint_certificate: (principal, nat64, nat64, nat64, nat64) -> (variant { Ok: nat64; Err: text });
+  get_certificate: (nat64) -> (opt InvestmentCertificate) query;
+  get_owner_certificates: (principal) -> (vec InvestmentCertificate) query;
+  get_certificate_metadata: (nat64) -> (opt CertificateMetadata) query;
   balance_of: (principal) -> (nat64) query;
+  mint: (principal, nat64) -> (); // deprecated
 }

@@ -1,0 +1,128 @@
+type Campaign = record {
+  id : nat64;
+  business_registration : nat8;
+  status : opt text;
+  title : text;
+  updated_at : nat64;
+  current_funding : nat64;
+  goal : nat64;
+  description : text;
+  end_date : nat64;
+  created_at : nat64;
+  legal_entity : text;
+  funding_goal : nat64;
+  contact_info : text;
+  category : text;
+  doc_ids : vec nat64;
+  amount_raised : nat64;
+};
+type CampaignCard = record {
+  id : nat64;
+  title : text;
+  goal : nat64;
+  end_date : nat64;
+  category : text;
+  days_left : int64;
+  amount_raised : nat64;
+};
+type CampaignMeta = record {
+  goal : nat64;
+  end_date_secs : nat64;
+  campaign_id : nat64;
+  amount_raised : nat64;
+};
+type CampaignStatus = variant { Ended; Active };
+type CampaignWithDetails = record {
+  campaign : CampaignCard;
+  details : Campaign;
+};
+type Doc = record {
+  id : nat64;
+  data : blob;
+  name : text;
+  content_type : text;
+  campaign_id : nat64;
+  uploaded_at : nat64;
+};
+type PaymentMethodDetail = record {
+  id : nat64;
+  provider : text;
+  owner : principal;
+  created_at_ns : nat64;
+  method_type : text;
+  currency : text;
+  is_active : bool;
+  masked_account : text;
+};
+type Result = variant { Ok : nat64; Err : text };
+type SPVDealInfo = record {
+  equity_percent : nat8;
+  spv_canister : opt principal;
+  total_raise : nat64;
+  fraction_price : nat64;
+  deal_id : nat64;
+  campaign_id : nat64;
+  spv_token_canister : opt principal;
+};
+type UnifiedFunding = record {
+  spv_raised : nat64;
+  total_goal : nat64;
+  traditional_raised : nat64;
+  icp_raised : nat64;
+  total_raised : nat64;
+};
+type UploadChunk = record {
+  chunk_index : nat32;
+  is_final : bool;
+  doc_id : nat64;
+  data : blob;
+};
+service : () -> {
+  approve_campaign : (nat64) -> (variant { Ok; Err : text });
+  create_campaign : (
+      text,
+      text,
+      nat64,
+      text,
+      text,
+      text,
+      nat8,
+      nat64,
+      nat64,
+    ) -> (nat64);
+  create_spv_deal : (nat64, nat8, nat64, nat64) -> (
+      variant { Ok : nat64; Err : text },
+    );
+  get_campaign_approval_status : (nat64) -> (opt text) query;
+  get_campaign_by_id : (nat64) -> (opt Campaign) query;
+  get_campaign_cards : () -> (vec CampaignCard) query;
+  get_campaign_cards_by_status : (CampaignStatus) -> (vec CampaignCard) query;
+  get_campaign_meta : (nat64) -> (opt CampaignMeta) query;
+  get_campaign_total_funding : (nat64) -> (nat64) query;
+  get_campaign_with_details : (nat64) -> (opt CampaignWithDetails) query;
+  get_doc : (nat64) -> (opt Doc) query;
+  get_icp_contribution : (nat64) -> (nat64) query;
+  get_spv_contribution : (nat64) -> (nat64) query;
+  get_spv_deal_info : (nat64) -> (opt SPVDealInfo) query;
+  get_spv_deals_for_campaign : (nat64) -> (vec nat64) query;
+  get_traditional_contribution : (nat64) -> (nat64) query;
+  get_unified_funding : (nat64) -> (opt UnifiedFunding) query;
+  get_user_payment_methods : (opt principal) -> (
+      variant { Ok : vec PaymentMethodDetail; Err : text },
+    );
+  greet : (text) -> (text) query;
+  link_campaign_to_spv : (nat64, nat64) -> (variant { Ok; Err : text });
+  process_traditional_payment : (nat64, nat64, nat64) -> (
+      variant { Ok : nat64; Err : text },
+    );
+  receive_icp_contribution : (nat64, nat64) -> (Result);
+  receive_payout : (nat64, nat64) -> (Result);
+  receive_spv_contribution : (nat64, nat64) -> (variant { Ok; Err : text });
+  set_admin_canister : (principal) -> ();
+  set_controller_canister : (principal) -> ();
+  set_payment_gateway_canister : (principal) -> ();
+  start_chunked_upload : (nat64, text, text, nat32, nat64) -> (opt nat64);
+  submit_campaign_for_approval : (nat64) -> (variant { Ok; Err : text });
+  upload_chunk : (UploadChunk) -> (variant { Ok; Err : text });
+  upload_doc : (nat64, text, text, blob, nat64) -> (opt nat64);
+}

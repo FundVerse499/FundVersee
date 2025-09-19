@@ -4,9 +4,16 @@ type DealTerms = record {
   total_raise: nat64;
   fraction_price: nat64;
   spv_canister: opt principal;
+  spv_token_canister: opt principal;
+  payment_gateway_canister: opt principal;
 };
 
 service : {
+  init: () -> ();
+  set_payment_gateway: (principal) -> ();
   create_spv: (text, nat8, nat64, nat64) -> (nat64);
+  set_spv_canisters: (nat64, principal, principal) -> (variant { Ok; Err: text });
+  invest_in_spv: (nat64, principal, nat64, nat64) -> (variant { Ok: nat64; Err: text });
+  complete_investment: (nat64, nat64) -> (variant { Ok; Err: text });
   list_deals: () -> (vec record { nat64; DealTerms }) query;
 }

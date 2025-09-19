@@ -27,6 +27,26 @@
       "package": "Admin",
       "candid": "src/Admin/Admin.did"
     },
+    "Controller": {
+      "type": "rust",
+      "package": "Controller",
+      "candid": "src/Controller/Controller.did"
+    },
+    "SPV": {
+      "type": "rust",
+      "package": "SPV",
+      "candid": "src/SPV/SPV.did"
+    },
+    "Spv_Token": {
+      "type": "rust",
+      "package": "Spv_Token",
+      "candid": "src/Spv_Token/Spv_Token.did"
+    },
+    "PaymentGateway": {
+      "type": "rust",
+      "package": "PaymentGateway",
+      "candid": "src/PaymentGateway/PaymentGateway.did"
+    },
     "FundVerse_frontend": {
       "dependencies": [
         "FundVerse_backend",

@@ -5,9 +5,9 @@
 
 use std::{borrow::Cow, cell::RefCell};
 
-use candid::{CandidType, Decode, Encode, Deserialize};
+use candid::{CandidType, Decode, Encode, Deserialize, Principal};
 use ic_cdk::{self};
-use ic_cdk_macros::{init, query, update};
+use ic_cdk_macros::{query, update};
 
 // ---- Stable storage (Campaigns) ----
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
@@ -36,6 +36,20 @@ thread_local! {
     
     // ICP contributions tracking: campaign_id -> total ICP amount in e8s
     static ICP_CONTRIBUTIONS: RefCell<HashMap<u64, u64>> = RefCell::new(HashMap::new());
+    
+    // Traditional payment contributions tracking: campaign_id -> total amount
+    static TRADITIONAL_CONTRIBUTIONS: RefCell<HashMap<u64, u64>> = RefCell::new(HashMap::new());
+    
+    // SPV contributions tracking: campaign_id -> total SPV amount
+    static SPV_CONTRIBUTIONS: RefCell<HashMap<u64, u64>> = RefCell::new(HashMap::new());
+    
+    // SPV deal mappings: campaign_id -> deal_id
+    static CAMPAIGN_SPV_DEALS: RefCell<HashMap<u64, u64>> = RefCell::new(HashMap::new());
+    
+    // Canister references
+    static CONTROLLER_CANISTER: RefCell<Option<Principal>> = RefCell::new(None);
+    static PAYMENT_GATEWAY_CANISTER: RefCell<Option<Principal>> = RefCell::new(None);
+    static ADMIN_CANISTER: RefCell<Option<Principal>> = RefCell::new(None);
 }
 
 // ------------- Data Models -------------
@@ -117,6 +131,41 @@ pub struct CampaignMeta {
     pub goal: u64,
     pub amount_raised: u64,
     pub end_date_secs: u64, // seconds since epoch
+}
+
+// Unified funding tracking structure
+#[derive(CandidType, Deserialize, Clone, Debug)]
+pub struct UnifiedFunding {
+    pub total_goal: u64,
+    pub icp_raised: u64,
+    pub traditional_raised: u64,
+    pub spv_raised: u64,
+    pub total_raised: u64, // computed field
+}
+
+// SPV deal information
+#[derive(CandidType, Deserialize, Clone, Debug)]
+pub struct SPVDealInfo {
+    pub deal_id: u64,
+    pub campaign_id: u64,
+    pub equity_percent: u8,
+    pub total_raise: u64,
+    pub fraction_price: u64,
+    pub spv_canister: Option<Principal>,
+    pub spv_token_canister: Option<Principal>,
+}
+
+// Payment method detail (from PaymentGateway)
+#[derive(CandidType, Deserialize, Clone, Debug)]
+pub struct PaymentMethodDetail {
+    pub id: u64,
+    pub owner: Principal,
+    pub method_type: String,
+    pub provider: String,
+    pub masked_account: String,
+    pub currency: String,
+    pub is_active: bool,
+    pub created_at_ns: u64,
 }
 
 // ------------- Helpers -------------
@@ -509,6 +558,298 @@ fn get_campaign_total_funding(campaign_id: u64) -> u64 {
 
 
 
+
+// ------------- Canister Setup Methods -------------
+
+/// Set the Controller canister principal for SPV integration
+#[update]
+fn set_controller_canister(controller: Principal) {
+    let caller = ic_cdk::api::caller();
+    if caller != ic_cdk::api::id() {
+        ic_cdk::trap("Only admin can set controller canister");
+    }
+    CONTROLLER_CANISTER.with(|cell| {
+        *cell.borrow_mut() = Some(controller);
+    });
+}
+
+/// Set the PaymentGateway canister principal
+#[update]
+fn set_payment_gateway_canister(payment_gateway: Principal) {
+    let caller = ic_cdk::api::caller();
+    if caller != ic_cdk::api::id() {
+        ic_cdk::trap("Only admin can set payment gateway canister");
+    }
+    PAYMENT_GATEWAY_CANISTER.with(|cell| {
+        *cell.borrow_mut() = Some(payment_gateway);
+    });
+}
+
+/// Set the Admin canister principal
+#[update]
+fn set_admin_canister(admin: Principal) {
+    let caller = ic_cdk::api::caller();
+    if caller != ic_cdk::api::id() {
+        ic_cdk::trap("Only admin can set admin canister");
+    }
+    ADMIN_CANISTER.with(|cell| {
+        *cell.borrow_mut() = Some(admin);
+    });
+}
+
+// ------------- SPV Integration Methods -------------
+
+/// Create an SPV deal for a campaign
+#[update]
+async fn create_spv_deal(campaign_id: u64, equity_percent: u8, total_raise: u64, fraction_price: u64) -> Result<u64, String> {
+    // Verify campaign exists
+    let Some(_campaign) = get_campaign(campaign_id) else {
+        return Err("Campaign not found".into());
+    };
+    
+    // Get controller canister
+    let controller = CONTROLLER_CANISTER.with(|cell| cell.borrow().clone())
+        .ok_or("Controller canister not set")?;
+    
+    // Call controller to create SPV deal
+    let startup_id = format!("campaign_{}", campaign_id);
+    let result: Result<(u64,), _> = ic_cdk::call(controller, "create_spv", (startup_id, equity_percent, total_raise, fraction_price)).await;
+    
+    match result {
+        Ok((deal_id,)) => {
+            // Map campaign to SPV deal
+            CAMPAIGN_SPV_DEALS.with(|deals| {
+                deals.borrow_mut().insert(campaign_id, deal_id);
+            });
+            Ok(deal_id)
+        },
+        Err(e) => Err(format!("Failed to create SPV deal: {:?}", e))
+    }
+}
+
+/// Get SPV deals for a campaign
+#[query]
+fn get_spv_deals_for_campaign(campaign_id: u64) -> Vec<u64> {
+    CAMPAIGN_SPV_DEALS.with(|deals| {
+        deals.borrow().get(&campaign_id).map(|deal_id| vec![*deal_id]).unwrap_or_default()
+    })
+}
+
+/// Link campaign to existing SPV deal
+#[update]
+fn link_campaign_to_spv(campaign_id: u64, deal_id: u64) -> Result<(), String> {
+    // Verify campaign exists
+    let Some(_campaign) = get_campaign(campaign_id) else {
+        return Err("Campaign not found".into());
+    };
+    
+    // Map campaign to SPV deal
+    CAMPAIGN_SPV_DEALS.with(|deals| {
+        deals.borrow_mut().insert(campaign_id, deal_id);
+    });
+    
+    Ok(())
+}
+
+/// Get SPV deal information for a campaign
+#[query]
+fn get_spv_deal_info(campaign_id: u64) -> Option<SPVDealInfo> {
+    let deal_id = CAMPAIGN_SPV_DEALS.with(|deals| {
+        deals.borrow().get(&campaign_id).cloned()
+    })?;
+    
+    let _controller = CONTROLLER_CANISTER.with(|cell| cell.borrow().clone())?;
+    
+    // This would need to be implemented as an async call in a real scenario
+    // For now, return basic info
+    Some(SPVDealInfo {
+        deal_id,
+        campaign_id,
+        equity_percent: 0, // Would need to fetch from controller
+        total_raise: 0,
+        fraction_price: 0,
+        spv_canister: None,
+        spv_token_canister: None,
+    })
+}
+
+/// Receive SPV contribution notification
+#[update]
+fn receive_spv_contribution(campaign_id: u64, amount: u64) -> Result<(), String> {
+    // Verify campaign exists
+    let Some(_campaign) = get_campaign(campaign_id) else {
+        return Err("Campaign not found".into());
+    };
+    
+    // Update SPV contributions tracking
+    SPV_CONTRIBUTIONS.with(|contributions| {
+        let mut contributions = contributions.borrow_mut();
+        let current = contributions.get(&campaign_id).unwrap_or(&0).clone();
+        contributions.insert(campaign_id, current + amount);
+    });
+    
+    // Update campaign amount raised
+    let campaign_amount = get_campaign(campaign_id).map(|c| c.amount_raised).unwrap_or(0);
+    let new_amount = campaign_amount + amount;
+    update_campaign_amount(campaign_id, new_amount);
+    
+    Ok(())
+}
+
+// ------------- PaymentGateway Integration Methods -------------
+
+/// Get user payment methods from PaymentGateway
+#[update]
+async fn get_user_payment_methods(user: Option<Principal>) -> Result<Vec<PaymentMethodDetail>, String> {
+    let payment_gateway = PAYMENT_GATEWAY_CANISTER.with(|cell| cell.borrow().clone())
+        .ok_or("PaymentGateway canister not set")?;
+    
+    let who = user.unwrap_or(ic_cdk::api::caller());
+    let result: Result<(Vec<PaymentMethodDetail>,), _> = ic_cdk::call(payment_gateway, "get_user_payment_methods", (Some(who),)).await;
+    
+    match result {
+        Ok((methods,)) => Ok(methods),
+        Err(e) => Err(format!("Failed to get payment methods: {:?}", e))
+    }
+}
+
+/// Process traditional payment through PaymentGateway
+#[update]
+fn process_traditional_payment(campaign_id: u64, _payment_method_id: u64, amount: u64) -> Result<u64, String> {
+    // Verify campaign exists
+    let Some(_campaign) = get_campaign(campaign_id) else {
+        return Err("Campaign not found".into());
+    };
+    
+    let _payment_gateway = PAYMENT_GATEWAY_CANISTER.with(|cell| cell.borrow().clone())
+        .ok_or("PaymentGateway canister not set")?;
+    
+    // For now, simulate payment processing
+    // In a real implementation, this would call PaymentGateway methods
+    let payment_id = ic_cdk::api::time(); // Use timestamp as payment ID
+    
+    // Update traditional contributions tracking
+    TRADITIONAL_CONTRIBUTIONS.with(|contributions| {
+        let mut contributions = contributions.borrow_mut();
+        let current = contributions.get(&campaign_id).unwrap_or(&0).clone();
+        contributions.insert(campaign_id, current + amount);
+    });
+    
+    // Update campaign amount raised
+    let campaign_amount = get_campaign(campaign_id).map(|c| c.amount_raised).unwrap_or(0);
+    let new_amount = campaign_amount + amount;
+    update_campaign_amount(campaign_id, new_amount);
+    
+    Ok(payment_id)
+}
+
+// ------------- Unified Funding Methods -------------
+
+/// Get unified funding information for a campaign
+#[query]
+fn get_unified_funding(campaign_id: u64) -> Option<UnifiedFunding> {
+    let campaign = get_campaign(campaign_id)?;
+    
+    let icp_raised = ICP_CONTRIBUTIONS.with(|contributions| {
+        contributions.borrow().get(&campaign_id).unwrap_or(&0).clone()
+    });
+    
+    let traditional_raised = TRADITIONAL_CONTRIBUTIONS.with(|contributions| {
+        contributions.borrow().get(&campaign_id).unwrap_or(&0).clone()
+    });
+    
+    let spv_raised = SPV_CONTRIBUTIONS.with(|contributions| {
+        contributions.borrow().get(&campaign_id).unwrap_or(&0).clone()
+    });
+    
+    let total_raised = icp_raised + traditional_raised + spv_raised;
+    
+    Some(UnifiedFunding {
+        total_goal: campaign.goal,
+        icp_raised,
+        traditional_raised,
+        spv_raised,
+        total_raised,
+    })
+}
+
+/// Get traditional payment contribution amount for a campaign
+#[query]
+fn get_traditional_contribution(campaign_id: u64) -> u64 {
+    TRADITIONAL_CONTRIBUTIONS.with(|contributions| {
+        contributions.borrow().get(&campaign_id).unwrap_or(&0).clone()
+    })
+}
+
+/// Get SPV contribution amount for a campaign
+#[query]
+fn get_spv_contribution(campaign_id: u64) -> u64 {
+    SPV_CONTRIBUTIONS.with(|contributions| {
+        contributions.borrow().get(&campaign_id).unwrap_or(&0).clone()
+    })
+}
+
+// ------------- Admin Integration Methods -------------
+
+/// Submit campaign for admin approval
+#[update]
+async fn submit_campaign_for_approval(campaign_id: u64) -> Result<(), String> {
+    // Verify campaign exists
+    let Some(mut campaign) = get_campaign(campaign_id) else {
+        return Err("Campaign not found".into());
+    };
+    
+    // Update campaign status to pending approval
+    campaign.status = Some("pending_approval".to_string());
+    campaign.updated_at = ic_cdk::api::time();
+    
+    CAMPAIGNS.with(|campaigns| {
+        campaigns.borrow_mut().insert(campaign_id, campaign);
+    });
+    
+    // Notify admin canister if set
+    if let Some(admin) = ADMIN_CANISTER.with(|cell| cell.borrow().clone()) {
+        let _: Result<((),), _> = ic_cdk::call(admin, "notify_campaign_submission", (campaign_id,)).await;
+    }
+    
+    Ok(())
+}
+
+/// Get campaign approval status
+#[query]
+fn get_campaign_approval_status(campaign_id: u64) -> Option<String> {
+    get_campaign(campaign_id).and_then(|c| c.status)
+}
+
+/// Approve campaign (admin only)
+#[update]
+fn approve_campaign(campaign_id: u64) -> Result<(), String> {
+    let caller = ic_cdk::api::caller();
+    
+    // Check if caller is admin canister
+    let is_admin = ADMIN_CANISTER.with(|cell| {
+        cell.borrow().as_ref().map(|admin| *admin == caller).unwrap_or(false)
+    });
+    
+    if !is_admin {
+        return Err("Only admin can approve campaigns".into());
+    }
+    
+    // Verify campaign exists
+    let Some(mut campaign) = get_campaign(campaign_id) else {
+        return Err("Campaign not found".into());
+    };
+    
+    // Update campaign status to approved
+    campaign.status = Some("approved".to_string());
+    campaign.updated_at = ic_cdk::api::time();
+    
+    CAMPAIGNS.with(|campaigns| {
+        campaigns.borrow_mut().insert(campaign_id, campaign);
+    });
+    
+    Ok(())
+}
 
 // Export Candid for tooling & UI integration
 ic_cdk::export_candid!();
