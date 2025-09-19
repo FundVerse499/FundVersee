@@ -1,4 +1,0 @@
-service : {
-  mint: (principal, nat64) -> ();
-  balance_of: (principal) -> (nat64) query;
-}
