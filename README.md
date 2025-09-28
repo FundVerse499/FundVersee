@@ -1,4 +1,4 @@
-# 🚀 FundVerse - Decentralized Crowdfunding Platform
+#  FundVerse - Decentralized Crowdfunding Platform
 
 <div align="center">
   <img src="diagram-export-9-19-2025-8_15_48-PM.png" alt="FundVerse Architecture Diagram" width="800"/>
@@ -9,24 +9,24 @@
   [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 </div>
 
-## 💡 Idea Brief
+##  Idea Brief
 
 **FundVerse** is a revolutionary decentralized crowdfunding platform built on the Internet Computer (IC) that bridges traditional and crypto funding methods. It enables entrepreneurs to raise capital through multiple channels while providing investors with diverse investment opportunities including equity participation via Special Purpose Vehicles (SPVs).
 
-### 🎯 Core Vision
+###  Core Vision
 - **Unified Funding**: Seamlessly integrate ICP cryptocurrency, traditional payment methods, and equity investments
 - **Decentralized Governance**: Community-driven campaign approval and management
 - **Transparent Operations**: All transactions and governance decisions recorded on-chain
 - **Global Accessibility**: Support for multiple currencies and payment methods worldwide
 
-### 🌟 Key Features
+###  Key Features
 - **Multi-Channel Funding**: ICP, credit cards, bank transfers, and digital wallets
 - **Equity Investments**: SPV-based equity participation with tokenized certificates
 - **Campaign Management**: Comprehensive project lifecycle from creation to completion
 - **Admin Governance**: Decentralized approval system for campaign quality control
 - **Real-time Analytics**: Live funding tracking and campaign performance metrics
 
-## 🏗️ How It Works
+## How It Works
 
 ### Architecture Overview
 FundVerse operates as a multi-canister system on the Internet Computer, with each canister handling specific functionality:
@@ -83,7 +83,7 @@ graph TD
     J --> L[Campaign Complete]
 ```
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### Backend (Internet Computer Canisters)
 - **Language**: Rust
@@ -113,7 +113,7 @@ graph TD
 - **Type Checking**: TypeScript strict mode
 - **Build System**: dfx (Internet Computer SDK)
 
-## 💼 Business Model
+##  Business Model
 
 ### Revenue Streams
 
@@ -157,7 +157,7 @@ graph TD
 - Global market reach
 - Network effects with user growth
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -270,13 +270,13 @@ The project includes multiple canisters:
    - Clear node_modules and reinstall: `rm -rf node_modules && npm install`
    - Check TypeScript errors: `npm run build`
 
-## 📚 Documentation
+##  Documentation
 
 - [Integration Guide](./INTEGRATION_GUIDE.md) - Backend canister integration
 - [Frontend Integration Guide](./FRONTEND_INTEGRATION_GUIDE.md) - Frontend development
 - [ICP Funding README](./ICP_FUNDING_README.md) - ICP integration details
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
@@ -284,7 +284,7 @@ The project includes multiple canisters:
 4. Push to branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
